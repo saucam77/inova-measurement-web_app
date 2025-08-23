@@ -1,1 +1,538 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>INOVA – Measurement (Web) v13</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0B6DB7"><style>:root{  --primary:#0B6DB7; --primary-dark:#0A4E87;  --surface:#fff; --surface-2:#FAFCFF; --border:#E6EAF0;  --text:#222; --ok:#2E7D32; --bad:#D32F2F;  --radius:12px; --radius-btn:10px; --gap:14px;  --shadow:0 6px 18px rgba(10,20,50,.06);  --maxw:1200px; --input-h:44px;}*{box-sizing:border-box} html,body{height:100%}body{  margin:0; font-family:Arial,Helvetica,sans-serif; color:var(--text);  background:linear-gradient(180deg,#fff 0,#f6f9ff 100%);  display:flex; justify-content:center; padding:20px;}.app{width:100%; max-width:var(--maxw)}.screen[hidden]{display:none!important}.card{background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); padding:20px}.btn{appearance:none; border:none; cursor:pointer; border-radius:var(--radius-btn);  padding:12px 16px; font-weight:700; background:var(--primary); color:#fff;  box-shadow:var(--shadow); transition:filter .2s,transform .05s; height:var(--input-h);  display:inline-flex; align-items:center; justify-content:center}.btn:hover{filter:brightness(1.05)} .btn:active{transform:translateY(1px)}.btn.secondary{background:#fff; color:#0A4E87; border:1px solid var(--border); box-shadow:none}.btn.danger{background:#e57373}.btn.warn{background:#f5b461; color:#5a3a00; border:1px solid #e6a84e}.btn:disabled{opacity:.55; cursor:not-allowed; filter:none}.panel-title{font-weight:800; color:#183A5B; margin:0 0 14px}/* ====== TELA 1 (home) ====== */.home-hero{display:flex; flex-direction:column; align-items:center; gap:18px; padding-top:0}.home-brand-logo{height:auto; max-width:clamp(160px,22vw,280px); display:block; margin:0 auto 18px; object-fit:contain; transform:translateY(-16px);}.home-title{font-size:clamp(28px,4vw,44px); margin:0; font-weight:900; letter-spacing:.6px; text-align:center}.home-sub{font-size:clamp(18px,2.6vw,26px); margin:0 0 10px 0; font-weight:700; color:#222; text-align:center}.home-btn{min-width:260px; border-radius:12px; height:calc(var(--input-h) * 2); font-size:clamp(1.25rem, 3.6vw, 2rem); padding:20px 24px;}.home-btn.muted{background:#9aa3ab; color:#fff}footer{margin-top:22px; padding-top:12px; border-top:1px solid #e6eaf0; font-size:.85rem; color:#5a6575; text-align:center}/* ====== TELA 2/3 base ====== */.field{display:flex; flex-direction:column; gap:6px}.field-row{display:grid; grid-template-columns:1fr 1fr; gap:10px}label{font-size:.92rem; color:#2b3f58; font-weight:700}label .req{color:#D32F2F; margin-left:4px}input[type="text"], textarea{  height:var(--input-h); border:1px solid var(--border); border-radius:10px; padding:0 12px;  background:#fff; color:#1d2b3d; font-size:1rem}textarea{height:auto; min-height:84px; padding:10px 12px; resize:vertical}input[readonly]{background:#f5f8ff}.measure-grid{display:grid; gap:var(--gap)}@media(min-width:992px){  .measure-grid{    grid-template-columns:1.15fr 1fr; grid-template-rows:auto 320px auto;    grid-template-areas:"form value" "form chart" "table table"  }  .area-form{grid-area:form} .area-value{grid-area:value}  .area-chart{grid-area:chart} .area-table{grid-area:table}}.box{background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:14px}.box-title{font-weight:800; margin:0 0 10px 0; color:#2b3f58}.highlight-box{background:#f2f2f2 !important; border:2px solid #555 !important; border-radius:12px}.highlight-box.area-chart .box-title{margin:12px 16px 10px}.highlight-box.area-value .box-title{margin:6px 16px 6px}.area-value.pulse{box-shadow:0 0 0 4px rgba(11,109,183,.15); transition:box-shadow .2s}.value-indicator{display:flex; flex-direction:column; gap:10px; justify-content:center; min-height:120px; text-align:center}.value-number{font-size:3.4rem; font-weight:900}.badge{display:inline-flex; align-items:center; gap:8px; font-weight:800}.dot{width:12px; height:12px; border-radius:50%; background:#ccc}.ok{color:var(--ok)} .bad{color:#D32F2F} .waiting{color:#98A4B8}.table{border-collapse:separate; border-spacing:0; font-size:.95rem; width:100%}.table th,.table td{padding:10px 12px; border-bottom:1px solid var(--border); white-space:nowrap}.table-wrap{max-height:420px; overflow:auto; width:100%}th.num, td.num{text-align:right} th.txt, td.txt{text-align:left}.chart-box{min-height:260px; display:flex; flex-direction:column; gap:8px; overflow:auto; padding:0 0 10px}canvas{display:block; width:100%; height:210px}/* ======== MOBILE: “modo operador” + gráfico logo abaixo ======== */.value-number{ font-size: clamp(46px, 9.5vw, 112px); }@media (max-width: 767px){  body{padding:10px}  .card{padding:14px}  /* ordem: Medição -> Gráfico -> Form -> Tabela */  .measure-grid{ display:flex; flex-direction:column; gap:12px; }  .area-value{ order:-3; }  .area-chart{ order:-2; display:block !important; } /* mostrar gráfico no mobile */  .area-form{  order:-1; }  .area-table{ order:0; }  /* Valor um pouco menor para caber bem */  .area-value .value-indicator{ min-height:90px; }  .value-number{ font-size: clamp(40px, 8.2vw, 84px); }  .area-value input{ height:50px; font-size:1.05rem; }  .area-value .btn{ height:50px; }  /* Gráfico mais compacto */  .chart-box{ padding:10px 10px 14px; }  canvas{ height:160px; }  /* Botões largura total e campos em coluna */  .btn, .home-btn{ width:100%; }  .actions{ display:grid; grid-template-columns:1fr; gap:10px; }  .field-row{ grid-template-columns:1fr; }  /* Histórico: só CSV */  .mobile-hide{ display:none !important; }  /* Modal: garantir centralização e sobreposição total no mobile */  .modal-overlay{ align-items:center !important; justify-content:center !important; }}/* Tablet+: botão HID visível, no mobile escondido */.hid-actions{ display:none; }@media (min-width:768px){ .hid-actions{ display:flex; gap:10px; margin-top:8px; } }/* ===== Modal (popup PIN) reforçado ===== */.modal-overlay{  position:fixed; inset:0; background:rgba(7,20,40,.45);  display:none; align-items:center; justify-content:center;  z-index: 10000;                 /* alto para não “esmagar” na lateral */  padding:16px;}.modal{  background:#fff; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,.18);  width:min(560px,92vw); max-height:82vh; padding:20px; border:2px solid #555;  display:flex; flex-direction:column; overflow:hidden;}.modal h4{margin:0 0 8px 0; font-size:1.1rem; color:#1f2d3d}.modal p{margin:0 0 14px 0; color:#37475a; white-space:pre-wrap; overflow:auto; max-height:56vh;}.modal .row{display:flex; gap:10px; justify-content:flex-end}/* ===== Toaster ===== */.toast{ position:fixed; right:18px; bottom:18px; display:flex; flex-direction:column; gap:10px; z-index:1000 }.toast-item{ min-width:260px; max-width:360px; background:#ffffff; border-radius:10px; box-shadow:var(--shadow);  border:1px solid var(--border); padding:12px 14px; font-weight:700; color:#1f2d3d }.toast-item.ok{border-color:#b7dfc0; background:#e9f7ec}.toast-item.warn{border-color:#f2d097; background:#fff3da; color:#5a3a00}.toast-item.err{border-color:#f1b7b7; background:#fdecec; color:#7a1f1f}</style><!-- Shim Web (PIN/Log) --><script>(function(){  if (window.backend) return;  async function sha256(text){    const enc = new TextEncoder().encode(String(text));    const buf = await crypto.subtle.digest('SHA-256', enc);    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');  }  const PIN_KEY='iml_web_pin_hash';  window.backend = {    log: (msg)=> console.log('[IML-Web]', msg),    isPinSet: async ()=> ({ set: !!localStorage.getItem(PIN_KEY) }),    setPin: async (pin)=>{      if(!/^\d{4,12}$/.test(String(pin||''))) return { ok:false, message:'PIN inválido' };      const hash = await sha256(pin);      localStorage.setItem(PIN_KEY, hash);      return { ok:true };    },    checkPin: async (pin)=>{      const saved = localStorage.getItem(PIN_KEY);      if(!saved) return { ok:true };      const hash = await sha256(pin||'');      return { ok: saved===hash };    }  };})();</script><!-- Service Worker --><script>if('serviceWorker' in navigator){  window.addEventListener('load', () => {    navigator.serviceWorker.register('./sw.js').catch(console.warn);  });}</script></head><body><main class="app">  <!-- ===== TELA 1 ===== -->  <section id="screen-home" class="screen card">    <div class="home-hero">      <img class="home-brand-logo" src="https://i.ibb.co/bgdWPQq0/Chat-GPT-Image-23-de-jun-de-2025-14-21-37-removebg-preview.png" alt="INOVA Controle"/>      <h1 class="home-title">INOVA- Measurement</h1>      <div class="home-sub">Web</div>      <button id="btn-home-cad" class="btn home-btn muted" type="button">Cadastros (beta)</button>      <button id="btn-go-measure" class="btn home-btn" type="button">Medição</button>    </div>    <footer>Desenvolvido por INOVA Controle®</footer>  </section>  <!-- ===== TELA 2 ===== -->  <section id="screen-measure" class="screen card" hidden>    <h2 class="panel-title">Medição (Sessão atual)</h2>    <div class="measure-grid">      <!-- 1) VALOR (vem primeiro no mobile) -->      <div class="box highlight-box area-value">        <h3 class="box-title">Medição realizada</h3>        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">          <div style="flex:1 1 240px">            <input id="f-medido" type="text" inputmode="decimal" autocomplete="off" style="width:100%;" placeholder="Digite o valor e pressione Enter" disabled>          </div>          <button id="btn-save" class="btn" type="button" disabled>Salvar</button>          <button id="btn-annul" class="btn danger" type="button" disabled>Anular</button>        </div>        <div class="value-indicator" style="margin-top:8px">          <div id="val-number" class="value-number" style="color:#111827">–</div>          <div id="val-result" class="badge waiting"><span class="dot"></span><span>Aguardando início da medição</span></div>        </div>        <div class="hid-actions">          <button id="btn-hid" class="btn secondary" type="button" title="Conectar instrumento que envia como teclado/HID">            Conectar dispositivo (HID)          </button>        </div>      </div>      <!-- 2) GRÁFICO (logo abaixo no mobile) -->      <div class="box highlight-box chart-box area-chart">        <h3 class="box-title">Gráfico de medições</h3>        <canvas id="chart" height="210"></canvas>      </div>      <!-- 3) FORMULÁRIO -->      <div class="box area-form">        <h3 class="box-title">Configuração</h3>        <div class="field">          <label for="f-nominal">Dimensão nominal <span class="req">*</span></label>          <input id="f-nominal" type="text" inputmode="decimal" autocomplete="off">        </div>        <div class="field-row" style="margin-top:10px">          <div class="field">            <label for="f-tol-plus">Tolerância superior <span class="req">*</span></label>            <input id="f-tol-plus" type="text" inputmode="decimal" autocomplete="off">          </div>          <div class="field">            <label for="f-tol-minus">Tolerância inferior <span class="req">*</span></label>            <input id="f-tol-minus" type="text" inputmode="decimal" autocomplete="off">          </div>        </div>        <div class="field-row" style="margin-top:10px">          <div class="field"><label for="f-lim-sup">Limite superior</label><input id="f-lim-sup" type="text" readonly></div>          <div class="field"><label for="f-lim-inf">Limite inferior</label><input id="f-lim-inf" type="text" readonly></div>        </div>        <hr style="border:none; border-top:1px solid var(--border); margin:14px 0">        <div class="field-row">          <div class="field">            <label for="f-peca-nome">Nome da peça <span class="req">*</span></label>            <input id="f-peca-nome" list="dl-peca" type="text" autocomplete="off" />            <datalist id="dl-peca"></datalist>          </div>          <div class="field">            <label for="f-peca-codigo">Código <span class="req">*</span></label>            <input id="f-peca-codigo" list="dl-codigo" type="text" autocomplete="off" />            <datalist id="dl-codigo"></datalist>          </div>        </div>        <div class="field-row" style="margin-top:10px">          <div class="field">            <label for="f-operador">Operador (opcional)</label>            <input id="f-operador" list="dl-operador" type="text" autocomplete="off" />            <datalist id="dl-operador"></datalist>          </div>          <div class="field">            <label for="f-turno">Turno (opcional)</label>            <input id="f-turno" list="dl-turno" type="text" autocomplete="off" placeholder="Ex.: 1, 2, 3" />            <datalist id="dl-turno"></datalist>          </div>        </div>        <div class="actions" style="margin-top:16px">          <button id="btn-start-measure" class="btn" type="button">Iniciar</button>          <button id="btn-clear-session" class="btn secondary" type="button">Limpar</button>          <button id="btn-go-history" class="btn secondary" type="button">Ver valores medidos</button>        </div>        <div class="field" style="margin-top:12px">          <label for="f-observ">Observações (opcional)</label>          <textarea id="f-observ" placeholder="Anote aqui informações relevantes desta sessão"></textarea>        </div>      </div>      <!-- 4) Tabela da sessão -->      <div class="box area-table">        <div class="table-wrap">          <table class="table" id="tbl-sessao">            <thead>              <tr>                <th class="num">Nº</th>                <th class="num">Valor</th>                <th class="txt">Resultado</th>                <th class="txt">Peça</th>                <th class="txt">Código</th>                <th class="txt">Operador</th>                <th class="txt">Turno</th>                <th class="txt">Data</th>              </tr>            </thead>            <tbody></tbody>          </table>        </div>      </div>    </div>    <div class="actions" style="margin-top:14px">      <button id="btn-back-home" class="btn secondary" type="button">Voltar ao início</button>    </div>  </section>  <!-- ===== TELA 3 (Histórico) ===== -->  <section id="screen-history" class="screen card" hidden>    <h2 class="panel-title">Histórico Global &amp; Exportação</h2>    <div class="box" style="margin-bottom:var(--gap)">      <h3 class="box-title">Ações</h3>      <div class="actions" style="gap:10px; flex-wrap:wrap">        <button id="btn-change-location" class="btn secondary mobile-hide" type="button">Alterar local da planilha</button>        <button id="btn-pin" class="btn warn mobile-hide" type="button">Definir/Alterar PIN</button>        <button id="btn-csv" class="btn secondary" type="button">Exportar CSV</button>        <button id="btn-clear-all" class="btn danger mobile-hide" type="button">Limpar histórico local</button>      </div>    </div>    <div class="box table-box" style="margin-bottom:var(--gap)">      <div class="table-wrap">        <table class="table" id="tbl-global">          <thead><tr>            <th class="num">Nº Global</th><th class="txt">Data</th><th class="txt">Sessão_ID</th>            <th class="txt">Peça</th><th class="txt">Código</th><th class="txt">Operador</th><th class="txt">Turno</th>            <th class="num">Nominal</th><th class="num">Tol. +</th><th class="num">Tol. −</th><th class="num">Lim. Sup.</th><th class="num">Lim. Inf.</th>            <th class="num">Valor</th><th class="txt">Resultado</th><th class="txt">Observações</th><th class="txt">Sincronizado</th>          </tr></thead><tbody></tbody>        </table>      </div>    </div>    <div class="actions"><button id="btn-history-back" class="btn secondary" type="button">Voltar à Medição</button></div>  </section></main><!-- Modal --><div id="modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">  <div class="modal">    <h4 id="modal-title">Mensagem</h4>    <p id="modal-msg">–</p>    <div class="row">      <button id="modal-cancel" class="btn secondary" type="button">Cancelar</button>      <button id="modal-ok" class="btn" type="button">OK</button>    </div>  </div></div><!-- Toaster --><div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div><script>/* ======= Navegação ======= */const screens={home:document.getElementById('screen-home'), measure:document.getElementById('screen-measure'), history:document.getElementById('screen-history')};async function showScreen(name){  if(name==='history' && window.backend?.isPinSet){    try{      const set = await window.backend.isPinSet();      if(set?.set){        const pin = await askPrompt({ title:'Acesso ao Histórico', message:'Digite o PIN para acessar o Histórico:', placeholder:'••••', type:'password' });        if(!pin){ toast('Acesso cancelado.', 'warn'); return; }        const ok = await window.backend.checkPin(pin);        if(!ok?.ok){ toast('PIN incorreto.', 'err'); return; }      }    }catch(_){}  }  Object.keys(screens).forEach(k=>screens[k].hidden=(k!==name));  if(name==='measure') resizeCanvas();  if(name==='history') renderGlobalTable();}document.getElementById('btn-go-measure').addEventListener('click',()=>showScreen('measure'));document.getElementById('btn-back-home').addEventListener('click',()=>showScreen('home'));document.getElementById('btn-history-back').addEventListener('click',()=>showScreen('measure'));document.getElementById('btn-go-history').addEventListener('click',()=>showScreen('history'));document.getElementById('btn-home-cad').addEventListener('click',()=>askModal({  title:'Cadastros (beta)',  message:'Módulo de cadastros em desenvolvimento.\nEm breve: Operadores, Peças e Códigos.',  okText:'OK'}));const gid=id=>document.getElementById(id);const reNom=/^\d{1,3},\d{4}$/;const parseNom=s=>parseFloat(String(s).replace(',','.'));const fmtNom=n=>n.toFixed(4).replace('.',',');const fmtBig=n=>{const s=Number(n).toFixed(4); const [i,d]=s.split('.'); return String(Number(i))+','+d;};/* Data/hora São Paulo */const nowStr = () => {  const dtf = new Intl.DateTimeFormat('en-CA', {    timeZone: 'America/Sao_Paulo',    year: 'numeric', month: '2-digit', day: '2-digit',    hour: '2-digit', minute: '2-digit', second: '2-digit',    hour12: false  });  const p = dtf.formatToParts(new Date());  const g = t => p.find(x => x.type === t).value;  return `${g('year')}-${g('month')}-${g('day')} ${g('hour')}:${g('minute')}:${g('second')}`;};/* ======= Campos ======= */const fNom=gid('f-nominal'), fTp=gid('f-tol-plus'), fTn=gid('f-tol-minus'),      fLs=gid('f-lim-sup'), fLi=gid('f-lim-inf'),      fPn=gid('f-peca-nome'), fPc=gid('f-peca-codigo'),      fOp=gid('f-operador'), fTu=gid('f-turno'),      fObs=gid('f-observ'),      fMed=gid('f-medido'),      btnSave=gid('btn-save'), btnAnnul=gid('btn-annul'), btnClear=gid('btn-clear-session'), btnStart=gid('btn-start-measure');const valNumber=gid('val-number'), valResult=gid('val-result');const tblSess=gid('tbl-sessao').querySelector('tbody');const tblGlob=gid('tbl-global').querySelector('tbody');const btnCsv=gid('btn-csv'), btnClearAll=gid('btn-clear-all'),      dlPn=gid('dl-peca'), dlPc=gid('dl-codigo'), dlOp=gid('dl-operador'), dlTu=gid('dl-turno');const btnChangeLoc=gid('btn-change-location');const btnPin=gid('btn-pin');/* ======= Toasts ======= */const toastBox=document.getElementById('toast');function toast(msg, type='ok', ms=3600){  const el=document.createElement('div');  el.className='toast-item '+type;  el.textContent=msg;  toastBox.appendChild(el);  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; }, ms-300);  setTimeout(()=> toastBox.removeChild(el), ms);}/* ======= Estado (localStorage) ======= */const STORAGE_KEY='iml_global_v8';const CACHE_KEY='iml_cache_v2';let global=loadGlobal();function loadGlobal(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')||[]}catch{return[]}}function saveGlobal(){localStorage.setItem(STORAGE_KEY, JSON.stringify(global));}let cache=loadCache();function loadCache(){  try{    const raw=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');    return {      peca:new Set(raw.peca||[]),      codigo:new Set(raw.codigo||[]),      operador:new Set(raw.operador||[]),      turno:new Set(raw.turno||[])    };  }catch{return {peca:new Set(),codigo:new Set(),operador:new Set(),turno:new Set()}}}function saveCache(){  localStorage.setItem(CACHE_KEY, JSON.stringify({    peca:[...cache.peca], codigo:[...cache.codigo], operador:[...cache.operador], turno:[...cache.turno]  }));}function setOptions(dl, values){ dl.innerHTML=''; [...values].sort().forEach(v=>{const o=document.createElement('option'); o.value=v; dl.appendChild(o);}); }function refreshCombos(){ setOptions(dlPn,cache.peca); setOptions(dlPc,cache.codigo); setOptions(dlOp,cache.operador); setOptions(dlTu,cache.turno); }refreshCombos();/* ======= Sessão atual ======= */let sessaoId=newSessId(), sessaoBuffer=[], ultimaConfig=null, lastCommitted=null;function newSessId(){const d=new Date(); return `SESS-${d.toISOString().replace(/[-:T]/g,'').slice(0,14)}`;}/* ======= Máscaras & Limites ======= */function safeTol(s){  if(s==null) return null;  s=String(s).trim().replace(',', '.');  if(s===''||s==='+'||s==='-') return null;  if(!/^[+-]?\d*\.?\d*$/.test(s)) return null;  const n=Number(s); return Number.isFinite(n)?n:null;}function maskNom(el){  let v=el.value.trim(); if(!v) return; v=v.replace('.',',');  const p=v.split(','), i=(p[0]||'').replace(/\D/g,'')||'0', d=((p[1]||'').replace(/\D/g,'')+'0000').slice(0,4);  el.value=i+','+d;}function maskTol(el){  const n=safeTol(el.value);  if(n==null){ el.value=''; return; }  const raw=String(el.value).trim();  const sign=raw.startsWith('-')?'-':(raw.startsWith('+')?'+':(n>=0?'+':'-'));  const abs=Math.abs(n);  const int=Math.floor(abs).toString();  const frac=(abs-Math.floor(abs)).toFixed(4).split('.')[1];  el.value=`${sign}${int}.${frac}`;}function getLimits(){  if(!reNom.test(fNom.value.trim())) return null;  const nominal=parseNom(fNom.value.trim());  const tp=safeTol(fTp.value), tn=safeTol(fTn.value);  if(tp==null||tn==null) return null;  return {ls:nominal+Math.abs(tp), li:nominal+tn};}function calcLimits(){  const L=getLimits();  if(L){ fLs.value=fmtNom(L.ls); fLi.value=fmtNom(L.li); }  else { fLs.value=''; fLi.value=''; }  updateSaveUI();}[fNom].forEach(el=>{  el.addEventListener('input',calcLimits);  el.addEventListener('blur',()=>{maskNom(el); calcLimits();});});[fTp,fTn].forEach(el=>{  el.addEventListener('input',calcLimits);  el.addEventListener('blur',()=>{maskTol(el); calcLimits();});});[fPn,fPc].forEach(el=>el.addEventListener('input',updateSaveUI));/* ======= Habilitação ======= */function isConfigComplete(){  const nominalOk=reNom.test(fNom.value.trim());  const tpOk=safeTol(fTp.value)!=null;  const tnOk=safeTol(fTn.value)!=null;  const pecaOk=!!fPn.value.trim();  const codOk=!!fPc.value.trim();  return nominalOk && tpOk && tnOk && pecaOk && codOk;}function updateSaveUI(){  const ready=isConfigComplete();  fMed.disabled=!ready; btnSave.disabled=!ready; btnAnnul.disabled=(sessaoBuffer.length===0);}/* ======= Indicador ======= */function currentRangeFor(vText){  const L=getLimits(); if(!L || !reNom.test(vText||'')) return null;  const lower=Math.min(L.li,L.ls), upper=Math.max(L.li,L.ls);  const v=parseNom(vText);  return v>=lower && v<=upper;}function paintIndicator(valText, ok){  if(valText==null){ valNumber.textContent='–'; }  else { valNumber.textContent=fmtBig(parseNom(valText)); }  const dot=valResult.querySelector('.dot'), txt=valResult.querySelector('span:last-child');  valResult.classList.remove('ok','bad','waiting'); dot.style.background='#ccc';  if(valText==null){ valResult.classList.add('waiting'); txt.textContent='Aguardando início da medição'; }  else if(ok){ valResult.classList.add('ok'); dot.style.background='var(--ok)'; txt.textContent='APROVADO'; }  else { valResult.classList.add('bad'); dot.style.background='var(--bad)'; txt.textContent='REPROVADO'; }}function updateIndicator(){  const vm=fMed.value.trim();  if(reNom.test(vm)){ const ok=currentRangeFor(vm); paintIndicator(vm, ok); }  else if(lastCommitted){ paintIndicator(lastCommitted.value, lastCommitted.result==='APROVADO'); }  else { paintIndicator(null,false); }}fMed.addEventListener('input',updateIndicator);/* ===== Modal/Prompt ===== */const modal=gid('modal'), modalOk=gid('modal-ok'), modalCancel=gid('modal-cancel'),      modalTitle=gid('modal-title'), modalMsg=gid('modal-msg');function askModal({title='Mensagem',message='Confirmar?',okText='OK',danger=false}={}){  modalTitle.textContent=title; modalMsg.textContent=message;  modalOk.textContent=okText; modalOk.classList.toggle('danger', !!danger);  const oldInput = modal.querySelector('.modal-input'); if (oldInput) oldInput.remove();  modal.style.display='flex';  return new Promise(res=>{    const done=v=>{ modal.style.display='none'; modalOk.onclick=null; modalCancel.onclick=null; modal.onclick=null; res(v); };    modalOk.onclick=()=>done(true);    modalCancel.onclick=()=>done(false);    modal.onclick=e=>{ if(e.target===modal) done(false); };  });}function askPrompt({title='Entrada', message='Digite o valor:', okText='OK', placeholder='', type='text'}={}){  modalTitle.textContent=title; modalMsg.textContent=message;  modalOk.textContent=okText; modalOk.classList.remove('danger');  const wrap=document.createElement('div'); wrap.className='modal-input';  const inp=document.createElement('input'); inp.type=type||'text'; inp.placeholder=placeholder||'';  inp.style.cssText='width:100%; height:40px; border:1px solid var(--border); border-radius:8px; padding:0 12px; margin-bottom:10px;';  wrap.appendChild(inp); modal.querySelector('.row').insertAdjacentElement('beforebegin', wrap);  modal.style.display='flex'; setTimeout(()=>{ inp.focus(); }, 30);  return new Promise(res=>{    const cleanup=()=>{ modal.style.display='none'; modalOk.onclick=null; modalCancel.onclick=null; modal.onclick=null; wrap.remove(); };    modalOk.onclick=()=>{ const v=inp.value; cleanup(); res(v); };    modalCancel.onclick=()=>{ cleanup(); res(null); };    modal.onclick=e=>{ if(e.target===modal){ cleanup(); res(null);} };    inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ modalOk.click(); } });  });}/* ===== Iniciar / Salvar / etc ===== */btnStart.addEventListener('click', async ()=>{  if(!isConfigComplete()){    await askModal({title:'Configuração incompleta', message:'Preencha Nominal, Tol.+, Tol.–, Peça e Código para iniciar.', okText:'OK'});    return;  }  const box=document.querySelector('.area-value');  box.scrollIntoView({behavior:'smooth', block:'start'});  box.classList.add('pulse'); setTimeout(()=>box.classList.remove('pulse'),1200);  fMed.disabled=false; btnSave.disabled=false; fMed.focus(); fMed.select?.();});function isWayOffByOneBeyondSpec(valueStr){  const L=getLimits(); if(!L || !reNom.test(valueStr)) return false;  const lower=Math.min(L.li,L.ls), upper=Math.max(L.li,L.ls);  const v=parseNom(valueStr); return (v>upper+1)||(v<lower-1);}async function saveMeasurement(){  if(!isConfigComplete()){    await askModal({title:'Configuração incompleta', message:'Complete os campos obrigatórios antes de salvar.', okText:'OK'});    return;  }  maskNom(fMed); maskTol(fTp); maskTol(fTn);  const medOk=reNom.test(fMed.value.trim()); if(!medOk){ fMed.focus(); return; }  const vm=fMed.value.trim();  if(isWayOffByOneBeyondSpec(vm)){    const ok=await askModal({title:'Valor muito fora do especificado', message:'Deseja registrar mesmo assim?', okText:'Registrar mesmo assim'});    if(!ok){ fMed.value=''; updateIndicator(); fMed.focus(); return; }  }  const ok=currentRangeFor(vm);  lastCommitted={value:vm, result: ok?'APROVADO':'REPROVADO'}; paintIndicator(lastCommitted.value, ok);  commitRow(vm, lastCommitted.result);  fMed.value=''; fMed.focus(); updateSaveUI();  toast('Medição registrada.', 'ok');  window.backend?.log?.('medida salva');}document.getElementById('btn-save').addEventListener('click',saveMeasurement);fMed.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); saveMeasurement(); }});document.getElementById('btn-annul').addEventListener('click', async ()=>{  if(sessaoBuffer.length===0) return;  const last=sessaoBuffer[sessaoBuffer.length-1];  const ok=await askModal({title:'Anular medição', message:`Anular a medição Nº ${last.n} (${last.valor})?`, okText:'Confirmar anulação', danger:true});  if(!ok) return;  last.resultado='ANULADO';  renderSessionTable(); plotChart(); updateSaveUI();  toast('Medição anulada.', 'warn'); window.backend?.log?.('medida anulada');});document.getElementById('btn-clear-session').addEventListener('click', async ()=>{  const ok=await askModal({title:'Limpar sessão', message:'Deseja limpar a sessão atual?', okText:'Limpar', danger:true});  if(!ok) return;  [fNom,fTp,fTn,fLs,fLi,fPn,fPc,fOp,fTu,fMed,fObs].forEach(el=>el.value='');  sessaoId=newSessId(); sessaoBuffer=[]; renderSessionTable(); clearChart();  lastCommitted=null; paintIndicator(null,false); calcLimits(); updateSaveUI();  toast('Sessão limpa.', 'warn'); window.backend?.log?.('sessão limpa');});/* ===== Persistência ===== */function currentCfg(){  return {    nominal:fNom.value.trim(), tp:fTp.value.trim(), tn:fTn.value.trim(),    peca:fPn.value.trim(), codigo:fPc.value.trim(),    operador:fOp.value.trim(), turno:fTu.value.trim(),    observ:fObs.value.trim()  };}function commitRow(valueText, resultText){  const cfg=currentCfg();  if(!ultimaConfig || Object.keys(cfg).some(k=>cfg[k]!==ultimaConfig[k])){    sessaoId=newSessId(); sessaoBuffer=[]; ultimaConfig={...cfg}; renderSessionTable(); clearChart();  }  const row={ n:sessaoBuffer.length+1, valor:valueText, resultado:resultText,              peca:cfg.peca, codigo:cfg.codigo, operador:cfg.operador, turno:cfg.turno, data:nowStr() };  sessaoBuffer.push(row); renderSessionTable(); plotChart();  if(cfg.peca) cache.peca.add(cfg.peca);  if(cfg.codigo) cache.codigo.add(cfg.codigo);  if(cfg.operador) cache.operador.add(cfg.operador);  if(cfg.turno) cache.turno.add(cfg.turno);  saveCache(); refreshCombos();  const gRow={ id_global:(global.length+1).toString().padStart(6,'0'), data:row.data, sessao_id:sessaoId,    peca_nome:cfg.peca, peca_codigo:cfg.codigo, operador:cfg.operador, turno:cfg.turno,    nominal:cfg.nominal, tol_sup:cfg.tp, tol_inf:cfg.tn,    lim_sup:fLs.value.trim(), lim_inf:fLi.value.trim(),    valor_medido:row.valor, resultado:row.resultado, observ:cfg.observ, synced:false };  global.push(gRow); saveGlobal();}/* ===== Tabelas ===== */function renderSessionTable(){  tblSess.innerHTML='';  [...sessaoBuffer].reverse().forEach(r=>{    const tr=document.createElement('tr');    tr.innerHTML=`<td class="num">${r.n}</td><td class="num">${r.valor}</td><td class="txt">${r.resultado}</td>                  <td class="txt">${r.peca}</td><td class="txt">${r.codigo}</td><td class="txt">${r.operador||''}</td>                  <td class="txt">${r.turno||''}</td><td class="txt">${r.data}</td>`;    tblSess.appendChild(tr);  });}function renderGlobalTable(){  tblGlob.innerHTML='';  const rows=[...global].sort((a,b)=> b.data.localeCompare(a.data));  rows.forEach(g=>{    const tr=document.createElement('tr');    tr.innerHTML=`<td class="num">${g.id_global}</td><td class="txt">${g.data}</td><td class="txt">${g.sessao_id}</td>                  <td class="txt">${g.peca_nome}</td><td class="txt">${g.peca_codigo}</td><td class="txt">${g.operador||''}</td>                  <td class="txt">${g.turno||''}</td><td class="num">${g.nominal}</td><td class="num">${g.tol_sup}</td>                  <td class="num">${g.tol_inf}</td><td class="num">${g.lim_sup}</td><td class="num">${g.lim_inf}</td>                  <td class="num">${g.valor_medido}</td><td class="txt">${g.resultado}</td><td class="txt">${g.observ||''}</td>                  <td class="txt">${g.synced?'Sim':'Não'}</td>`;    tblGlob.appendChild(tr);  });}/* ===== CSV ===== */btnCsv.addEventListener('click',()=>{  if(global.length===0){ alert('Sem dados para exportar.'); return; }  const cols=['Nº Global','Data','Sessão_ID','Peça','Código','Operador','Turno','Nominal','Tol. +','Tol. −','Lim. Sup.','Lim. Inf.','Valor','Resultado','Observações','Sincronizado'];  const rows=[...global].sort((a,b)=> b.data.localeCompare(a.data))    .map(g=>[g.id_global,g.data,g.sessao_id,g.peca_nome,g.peca_codigo,g.operador||'',g.turno||'',             g.nominal,g.tol_sup,g.tol_inf,g.lim_sup,g.lim_inf,g.valor_medido,g.resultado,g.observ||'', g.synced?'Sim':'Não']);  const esc=v=>`"${String(v).replace(/"/g,'""')}"`;  const csv=[cols.map(esc).join(';')].concat(rows.map(r=>r.map(esc).join(';'))).join('\n');  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}), url=URL.createObjectURL(blob);  const a=document.createElement('a'); a.href=url; a.download=`historico_global_${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(url);});/* ===== Desktop-only (ocultos no mobile por CSS) ===== */btnChangeLoc?.addEventListener('click', async () => {  if(!window.backend?.pickLocation){    await askModal({title:'Disponível no Desktop', message:'Altere o local da planilha pela versão Desktop.\nNo navegador, utilize "Exportar CSV".', okText:'OK'});    return;  }});btnClearAll?.addEventListener('click', async ()=>{  const ok=await askModal({title:'Limpar histórico', message:'Deseja remover todo o histórico local?', okText:'Limpar', danger:true});  if(!ok) return;  localStorage.removeItem(STORAGE_KEY); global=[]; renderGlobalTable();  toast('Histórico limpo.', 'warn'); window.backend?.log?.('histórico limpo');});btnPin?.addEventListener('click', async ()=>{  const pin = await askPrompt({ title:'Definir/Alterar PIN', message:'Defina um PIN numérico (4–12 dígitos):', placeholder:'••••', type:'password', okText:'Salvar PIN' });  if(pin===null){ toast('PIN não alterado.', 'warn'); return; }  if(!/^\d{4,12}$/.test(pin)){ toast('PIN inválido. Use 4 a 12 dígitos.', 'err'); return; }  const ok = await window.backend.setPin(pin);  if(ok?.ok){ toast('PIN definido/atualizado.', 'ok'); window.backend?.log?.('PIN atualizado'); }  else { toast('Não foi possível salvar o PIN.', 'err'); }});/* ===== Gráfico ===== */const canvas=gid('chart'), ctx=canvas.getContext('2d');function resizeCanvas(){ const w=canvas.parentElement.clientWidth||800; canvas.width=Math.max(560,w-28); plotChart(); }window.addEventListener('resize',resizeCanvas);function clearChart(){ ctx.clearRect(0,0,canvas.width,canvas.height); drawFrame(); }function drawFrame(){ ctx.strokeStyle='#E6EAF0'; ctx.lineWidth=1; ctx.strokeRect(0,0,canvas.width,canvas.height); }function plotChart(){  clearChart();  const L=getLimits(); if(!L) return;  const lower=Math.min(L.li,L.ls), upper=Math.max(L.li,L.ls);  const pad={l:50,r:10,t:10,b:28};  const pts=sessaoBuffer.filter(r=>r.resultado!=='ANULADO');  const N=pts.length;  const ys=pts.map(r=>parseNom(r.valor));  const minY=Math.min(lower, ...(N?ys:[lower]))-0.0005;  const maxY=Math.max(upper, ...(N?ys:[upper]))+0.0005;  const x=i=>{const w=canvas.width-pad.l-pad.r; return pad.l + (w*((i-1)/Math.max(1,N-1)));};  const y=v=>{const h=canvas.height-pad.t-pad.b; return pad.t + (maxY-v)*(h/(maxY-minY||1));};  ctx.strokeStyle='#CCD6E6'; ctx.lineWidth=1;  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,canvas.height-pad.b); ctx.stroke();  ctx.beginPath(); ctx.moveTo(pad.l,canvas.height-pad.b); ctx.lineTo(canvas.width-pad.r,canvas.height-pad.b); ctx.stroke();  if(N){    ctx.strokeStyle='#0A4E87'; ctx.lineWidth=2; ctx.beginPath();    pts.forEach((r,i0)=>{const xi=x(i0+1), yi=y(parseNom(r.valor)); if(i0===0) ctx.moveTo(xi,yi); else ctx.lineTo(xi,yi);}); ctx.stroke();    pts.forEach((r,i0)=>{const xi=x(i0+1), yi=y(parseNom(r.valor)); ctx.beginPath(); ctx.fillStyle=(r.resultado==='APROVADO')?'#2E7D32':'#D32F2F'; ctx.arc(xi,yi,4,0,2*Math.PI); ctx.fill();});  }  ctx.strokeStyle='#000'; ctx.lineWidth=2.8;  ctx.beginPath(); ctx.moveTo(pad.l,y(upper)); ctx.lineTo(canvas.width-pad.r,y(upper)); ctx.stroke();  ctx.beginPath(); ctx.moveTo(pad.l,y(lower)); ctx.lineTo(canvas.width-pad.r,y(lower)); ctx.stroke();}/* ===== Init ===== */calcLimits(); updateSaveUI(); showScreen('home');/* WebHID (opcional) */async function connectHID() {  if (!('hid' in navigator)) { toast('WebHID não é suportado neste navegador.', 'warn'); return; }  try {    const devices = await navigator.hid.requestDevice({ filters: [] });    const device = devices?.[0];    if (!device) return;    await device.open();    device.addEventListener('inputreport', e => {      const data = new Uint8Array(e.data.buffer);      const text = new TextDecoder().decode(data).trim();      const match = text.match(/[-+]?\d{1,3}[,.]\d{3,4}/);      if (match) {        const normalized = match[0].replace('.', ',');        fMed.value = normalized; updateIndicator();        // saveMeasurement();      }    });    toast('Dispositivo HID conectado.', 'ok');  } catch (err) {    toast('Falha ao conectar HID.', 'err'); console.error(err);  }}document.getElementById('btn-hid')?.addEventListener('click', connectHID);</script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>INOVA – Measurement (Web) v15</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0B6DB7">
+  <link rel="icon" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="icon" sizes="512x512" href="./icons/icon-512.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --brand:#0B6DB7;
+      --brand-700:#0a5fa1;
+      --ok:#2e7d32;
+      --bad:#c62828;
+      --bg:#f3f6fb;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#6b7280;
+      --ring:rgba(11,109,183,.25);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 50% -10%, #eaf2fb 0, transparent 60%),
+        linear-gradient(#ffffff, #f6f9ff 20%, #eef3fb 100%);
+    }
+    .container{
+      max-width:980px; margin:24px auto; padding:0 16px;
+    }
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:0 6px 24px rgba(16,24,40,.06), inset 0 0 0 1px rgba(16,24,40,.05);
+      padding:18px;
+    }
+    h1{font-size:clamp(22px,4vw,28px); margin:0 0 16px; font-weight:800; color:#0d2b4e}
+    h2{font-size:clamp(18px,3.2vw,22px); margin:8px 0 12px; font-weight:700; color:#123b64}
+    .muted{color:var(--muted)}
+    .btn{
+      appearance:none; border:0; cursor:pointer; user-select:none;
+      border-radius:12px; padding:12px 16px; font-weight:700;
+      font-size:16px; line-height:1; transition:.2s;
+      display:inline-flex; align-items:center; justify-content:center;
+    }
+    .btn-primary{background:var(--brand); color:#fff}
+    .btn-primary:hover{background:var(--brand-700)}
+    .btn-ghost{background:#e7eef7; color:#334155}
+    .btn-ghost:hover{background:#d9e6f5}
+    .btn-danger{background:#f2c7c7; color:#7a1212}
+    .btn-danger:hover{background:#efb9b9}
+
+    .input{
+      width:100%; border:1px solid #e5e7eb; background:#fbfdff;
+      border-radius:12px; padding:12px 14px; font-size:16px;
+      outline:none; transition:.15s border, .15s box-shadow;
+    }
+    .input:focus{border-color:var(--brand); box-shadow:0 0 0 4px var(--ring)}
+
+    .grid-2{
+      display:grid; gap:12px;
+      grid-template-columns:1fr 1fr;
+    }
+    .grid-form{
+      display:grid; gap:12px;
+      grid-template-columns:1fr 1fr;
+    }
+    @media (max-width:720px){
+      .grid-form{grid-template-columns:1fr}
+    }
+
+    /* Screens */
+    .screen{display:none}
+    .screen.active{display:block}
+
+    /* Home */
+    .home-logo{display:block; margin:0 auto 12px; width:120px; opacity:.9}
+    .home-title{ text-align:center; font-size:clamp(26px,5vw,42px); font-weight:800; margin:12px 0 }
+    .home-sub{ text-align:center; color:var(--muted); margin-bottom:20px}
+    .home-actions{ display:grid; gap:14px; max-width:420px; margin:0 auto}
+
+    /* Measure */
+    .measure-wrap{display:grid; gap:16px}
+    @media (min-width:980px){
+      .measure-wrap{grid-template-columns:1fr 1fr}
+    }
+    .panel-title{font-size:18px; font-weight:800; margin:0 0 10px}
+    .kbd{font-size:14px; padding:2px 8px; background:#eef2f6; border-radius:999px}
+
+    .measure-card{
+      background:#f6f9fd; border-radius:14px; padding:16px;
+      border:1px solid #e5edf8; position:relative;
+    }
+    .big-value{font-size:clamp(34px,8vw,96px); font-weight:900; letter-spacing:1px}
+    .status{
+      display:flex; align-items:center; gap:8px; font-weight:800; margin-top:8px
+    }
+    .dot{width:10px; height:10px; border-radius:999px; background:#94a3b8}
+    .status.ok .dot{background:var(--ok)}
+    .status.bad .dot{background:var(--bad)}
+
+    /* Buttons below input ALWAYS side by side (portrait e landscape) */
+    .measure-actions{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:10px 0 6px }
+
+    /* Chart placeholder */
+    .chart{
+      width:100%; height:220px; background:
+        linear-gradient(#ffffff,#ffffff),
+        repeating-linear-gradient(to right, transparent 0 60px, rgba(2,6,23,.06) 60px 61px),
+        repeating-linear-gradient(to bottom, transparent 0 60px, rgba(2,6,23,.06) 60px 61px);
+      border-radius:12px; border:1px solid #e5e7eb; position:relative; overflow:hidden;
+    }
+    .chart path{stroke:#1e6bb8; stroke-width:3; fill:none}
+
+    /* History */
+    .actions-row{display:flex; flex-wrap:wrap; gap:10px}
+    @media (max-width:480px){ .actions-row{flex-direction:column} }
+    .table{width:100%; border-collapse:separate; border-spacing:0; font-size:14px}
+    .table th,.table td{padding:10px 12px; border-bottom:1px solid #eef2f7; white-space:nowrap}
+    .table th{font-weight:800; color:#123b64; background:#f7fbff}
+    .table tr:hover td{background:#fafcff}
+
+    /* Modal PIN */
+    .modal-overlay{
+      position:fixed; inset:0; background:rgba(2,6,23,.45);
+      display:none; align-items:center; justify-content:center; z-index:50;
+    }
+    .modal-overlay.show{display:flex}
+    .modal{
+      width:min(92vw,420px); background:#fff; border-radius:16px; padding:18px;
+      box-shadow:0 24px 60px rgba(15,23,42,.25)
+    }
+    .modal h3{margin:0 0 8px; font-size:20px}
+    .modal .row{display:grid; gap:10px; grid-template-columns:1fr auto}
+    .link{color:var(--brand); text-decoration:none; font-weight:600}
+    footer{margin:18px 0 6px; text-align:center; color:#8fa0b6; font-size:13px}
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <!-- TELA 1 – HOME -->
+    <section id="screen-home" class="screen active">
+      <div class="card" style="text-align:center">
+        <img class="home-logo" alt="INOVA Controle" src="./icons/icon-192.png">
+        <h1 class="home-title">INOVA- Measurement</h1>
+        <div class="home-sub">Web</div>
+        <div class="home-actions">
+          <button class="btn btn-ghost" disabled>Cadastros (beta)</button>
+          <button class="btn btn-primary" id="go-measure">Medição</button>
+        </div>
+        <footer>Desenvolvido por INOVA Controle®</footer>
+      </div>
+    </section>
+
+    <!-- TELA 2 – MEDIÇÃO -->
+    <section id="screen-measure" class="screen">
+      <h1>Medição (Sessão atual)</h1>
+
+      <div class="measure-wrap">
+        <!-- Coluna esquerda – Configuração -->
+        <div class="card">
+          <h2 class="panel-title">Configuração</h2>
+          <div class="grid-form">
+            <div>
+              <label class="muted">Dimensão nominal <span class="kbd">*</span></label>
+              <input id="f-nom" class="input" autocomplete="off" inputmode="decimal">
+            </div>
+            <div>
+              <label class="muted">Tolerância superior <span class="kbd">*</span></label>
+              <input id="f-tol-plus" class="input" autocomplete="off" inputmode="decimal">
+            </div>
+            <div>
+              <label class="muted">Tolerância inferior <span class="kbd">*</span></label>
+              <input id="f-tol-minus" class="input" autocomplete="off" inputmode="decimal">
+            </div>
+            <div>
+              <label class="muted">Limite superior</label>
+              <input id="f-max" class="input" disabled>
+            </div>
+            <div>
+              <label class="muted">Limite inferior</label>
+              <input id="f-min" class="input" disabled>
+            </div>
+            <div>
+              <label class="muted">Nome da peça <span class="kbd">*</span></label>
+              <input id="f-piece" class="input" autocomplete="off">
+            </div>
+            <div>
+              <label class="muted">Código <span class="kbd">*</span></label>
+              <input id="f-code" class="input" autocomplete="off">
+            </div>
+            <div>
+              <label class="muted">Operador (opcional)</label>
+              <input id="f-operator" class="input" autocomplete="off">
+            </div>
+            <div>
+              <label class="muted">Turno (opcional)</label>
+              <input id="f-shift" class="input" placeholder="Ex.: 1, 2, 3" autocomplete="off">
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap">
+            <button class="btn btn-primary" id="btn-start">Iniciar</button>
+            <button class="btn btn-ghost" id="btn-clear">Limpar</button>
+            <button class="btn btn-ghost" id="btn-history">Ver valores medidos</button>
+          </div>
+
+          <div style="margin-top:10px">
+            <label class="muted">Observações (opcional)</label>
+            <textarea id="f-notes" class="input" rows="4" style="resize:vertical"></textarea>
+          </div>
+        </div>
+
+        <!-- Coluna direita – Medição + Gráfico -->
+        <div class="card">
+          <div class="measure-card" id="measure-card">
+            <h2 class="panel-title">Medição realizada</h2>
+
+            <input id="value-input" class="input" placeholder="Digite o valor e pressione Enter" inputmode="decimal" autocomplete="off">
+
+            <!-- AQUI: botões sempre lado a lado -->
+            <div class="measure-actions">
+              <button id="btn-save" class="btn btn-primary">Salvar</button>
+              <button id="btn-cancel" class="btn btn-danger">Anular</button>
+            </div>
+
+            <div class="big-value" id="big-value">–</div>
+            <div class="status" id="status"><span class="dot"></span><span class="muted">Aguardando início da medição</span></div>
+
+            <div style="margin-top:10px">
+              <button class="btn btn-ghost" id="btn-hid">Conectar dispositivo (HID)</button>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <h2 class="panel-title">Gráfico de medições</h2>
+            <div class="chart">
+              <!-- gráfico simples em SVG (placeholder) -->
+              <svg id="lineSvg" viewBox="0 0 600 220" preserveAspectRatio="none" width="100%" height="100%">
+                <path id="linePath" d="M10,180 L110,150 L210,185 L310,120 L410,170 L590,170"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TELA 3 – HISTÓRICO / EXPORTAÇÃO -->
+    <section id="screen-history" class="screen">
+      <h1>Histórico Global & Exportação</h1>
+
+      <div class="card">
+        <h2 class="panel-title">Ações</h2>
+        <div class="actions-row" style="margin-bottom:12px">
+          <button class="btn btn-ghost" id="btn-pin">Definir/Alterar PIN</button>
+          <button class="btn btn-primary" id="btn-export">Exportar CSV</button>
+          <button class="btn btn-danger" id="btn-clear-history">Limpar histórico local</button>
+        </div>
+
+        <div class="card" style="padding:0">
+          <div style="overflow:auto">
+            <table class="table" id="history-table">
+              <thead>
+                <tr>
+                  <th>Nº Global</th>
+                  <th>Data</th>
+                  <th>Sessão_ID</th>
+                  <th>Peça</th>
+                  <th>Código</th>
+                  <th>Operador</th>
+                  <th>Turno</th>
+                  <th>Nominal</th>
+                  <th>Tol. +</th>
+                  <th>Tol. −</th>
+                  <th>Valor</th>
+                  <th>Resultado</th>
+                </tr>
+              </thead>
+              <tbody id="history-body">
+                <!-- linhas geradas pelo JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <button class="btn btn-ghost" id="back-to-measure">Voltar à Medição</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL PIN -->
+  <div id="modal" class="modal-overlay" aria-modal="true" role="dialog" aria-labelledby="modal-title">
+    <div class="modal">
+      <h3 id="modal-title">Acesso ao Histórico</h3>
+      <p class="muted" style="margin-top:-2px">Digite o PIN para acessar o Histórico:</p>
+      <div class="row">
+        <input id="pin-input" class="input" maxlength="6" placeholder="••••" inputmode="numeric" autocomplete="one-time-code">
+        <button id="pin-ok" class="btn btn-primary">OK</button>
+      </div>
+      <div style="margin-top:10px; display:flex; gap:8px; justify-content:flex-end">
+        <button id="pin-cancel" class="btn btn-ghost">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shim opcional (PIN local) -->
+  <script src="./pin-web-shim.js"></script>
+
+  <script>
+    /* ===== Navegação simples entre telas ===== */
+    const scrHome = document.getElementById('screen-home');
+    const scrMeasure = document.getElementById('screen-measure');
+    const scrHistory = document.getElementById('screen-history');
+
+    function show(screen){
+      [scrHome, scrMeasure, scrHistory].forEach(s => s.classList.remove('active'));
+      screen.classList.add('active');
+      // quando entrar na tela de medição, garantir que o bloco apareça todo
+      if (screen === scrMeasure) {
+        setTimeout(() => document.getElementById('measure-card').scrollIntoView({behavior:'smooth', block:'start'}), 50);
+      }
+    }
+
+    document.getElementById('go-measure').addEventListener('click', () => show(scrMeasure));
+    document.getElementById('btn-history').addEventListener('click', () => {
+      // se existir PIN ativo, solicitar:
+      checkHistoryAccess();
+    });
+    document.getElementById('back-to-measure').addEventListener('click', () => show(scrMeasure));
+
+    /* ===== Cálculo de limites ===== */
+    const fNom = document.getElementById('f-nom');
+    const fPlus = document.getElementById('f-tol-plus');
+    const fMinus = document.getElementById('f-tol-minus');
+    const fMax = document.getElementById('f-max');
+    const fMin = document.getElementById('f-min');
+
+    function toNum(v){ return Number(String(v).replace(',', '.')) || 0 }
+    function fmt(v){ return toNum(v).toLocaleString('pt-BR', {minimumFractionDigits:4, maximumFractionDigits:4}) }
+
+    function recalc(){
+      const nom = toNum(fNom.value), plus = toNum(fPlus.value), minus = toNum(fMinus.value);
+      fMax.value = (nom + plus).toLocaleString('pt-BR', {minimumFractionDigits:4});
+      fMin.value = (nom + minus).toLocaleString('pt-BR', {minimumFractionDigits:4});
+    }
+    [fNom,fPlus,fMinus].forEach(i => i.addEventListener('input', recalc));
+
+    /* ===== Medição ===== */
+    const bigValue = document.getElementById('big-value');
+    const statusEl = document.getElementById('status');
+    const inputVal = document.getElementById('value-input');
+
+    function setStatus(ok){
+      statusEl.classList.toggle('ok', ok===true);
+      statusEl.classList.toggle('bad', ok===false);
+      statusEl.innerHTML = ok===true
+        ? '<span class="dot"></span><span>APROVADO</span>'
+        : (ok===false ? '<span class="dot"></span><span>REPROVADO</span>' : '<span class="dot"></span><span class="muted">Aguardando início da medição</span>');
+    }
+    setStatus(null);
+
+    inputVal.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter'){ saveValue() }
+    });
+
+    document.getElementById('btn-save').addEventListener('click', saveValue);
+    document.getElementById('btn-cancel').addEventListener('click', ()=>{
+      inputVal.value=''; bigValue.textContent='–'; setStatus(null);
+    });
+
+    function saveValue(){
+      const v = toNum(inputVal.value);
+      if(!v) return;
+      bigValue.textContent = v.toLocaleString('pt-BR', {minimumFractionDigits:4});
+      const max = toNum(fMax.value), min = toNum(fMin.value);
+      setStatus(v<=max && v>=min);
+      pushHistoryRow(v);
+      inputVal.value='';
+      // desenha ponto no gráfico simples
+      appendPoint(v);
+    }
+
+    document.getElementById('btn-start').addEventListener('click', ()=>{
+      show(scrMeasure);
+      document.getElementById('measure-card').scrollIntoView({behavior:'smooth', block:'start'});
+      inputVal.focus({preventScroll:true});
+    });
+
+    document.getElementById('btn-clear').addEventListener('click', ()=>{
+      [fNom,fPlus,fMinus].forEach(i=>i.value='');
+      [fMax,fMin].forEach(i=>i.value='');
+      document.getElementById('f-piece').value='';
+      document.getElementById('f-code').value='';
+      document.getElementById('f-operator').value='';
+      document.getElementById('f-shift').value='';
+      document.getElementById('f-notes').value='';
+      bigValue.textContent='–'; setStatus(null);
+    });
+
+    /* ===== Gráfico SVG simples ===== */
+    const svg = document.getElementById('lineSvg');
+    const path = document.getElementById('linePath');
+    const points = [];
+    function appendPoint(v){
+      // mantemos até 20 pontos (apenas visual)
+      points.push(v);
+      if(points.length>20) points.shift();
+      const w = 600, h = 220;
+      const max = Math.max(...points), min = Math.min(...points);
+      const range = (max-min) || 1;
+      const stepX = (w-20) / Math.max(points.length-1,1);
+      const d = points.map((pv,idx)=>{
+        const x = 10 + stepX*idx;
+        const y = 200 - ((pv-min)/range)*160; // margens top/bottom
+        return (idx===0? 'M':'L')+x.toFixed(1)+','+y.toFixed(1);
+      }).join(' ');
+      path.setAttribute('d', d || 'M10,180 L590,180');
+    }
+
+    /* ===== Histórico (tabela) ===== */
+    const tbody = document.getElementById('history-body');
+    let counter = 1;
+    function pushHistoryRow(v){
+      const tr = document.createElement('tr');
+      const when = new Date();
+      const row = [
+        String(counter).padStart(6,'0'),
+        when.toISOString().slice(0,19).replace('T',' '),
+        'SESS-'+when.toISOString().replace(/[-:T.Z]/g,'').slice(0,14),
+        document.getElementById('f-piece').value || '-',
+        document.getElementById('f-code').value || '-',
+        document.getElementById('f-operator').value || '-',
+        document.getElementById('f-shift').value || '-',
+        fmt(fNom.value||0),
+        fmt(fPlus.value||0),
+        fmt(fMinus.value||0),
+        v.toLocaleString('pt-BR', {minimumFractionDigits:4}),
+        (statusEl.classList.contains('ok')?'OK':'NOK')
+      ];
+      tr.innerHTML = row.map(c=>`<td>${c}</td>`).join('');
+      tbody.prepend(tr);
+      counter++;
+    }
+
+    document.getElementById('btn-export').addEventListener('click', ()=>{
+      const rows = [['Nº Global','Data','Sessão_ID','Peça','Código','Operador','Turno','Nominal','Tol.+','Tol.-','Valor','Resultado']];
+      [...tbody.children].reverse().forEach(tr=>{
+        rows.push([...tr.children].map(td=>td.textContent));
+      });
+      const csv = rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(';')).join('\r\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'inova_measurements.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    document.getElementById('btn-clear-history').addEventListener('click', ()=>{
+      if(confirm('Tem certeza que deseja limpar o histórico local?')){
+        tbody.innerHTML='';
+        counter=1;
+      }
+    });
+
+    /* ===== PIN (modal) ===== */
+    const modal = document.getElementById('modal');
+    const pinInput = document.getElementById('pin-input');
+    const pinOK = document.getElementById('pin-ok');
+    const pinCancel = document.getElementById('pin-cancel');
+    const btnPin = document.getElementById('btn-pin');
+
+    let _pin = localStorage.getItem('im_pin') || '';
+
+    function openModal(){ modal.classList.add('show'); setTimeout(()=>pinInput.focus(), 50) }
+    function closeModal(){ modal.classList.remove('show') }
+
+    function checkHistoryAccess(){
+      if(!_pin){ // se não existir PIN, pede pra definir antes de abrir histórico
+        openModal();
+      }else{
+        openModal();
+      }
+    }
+
+    btnPin.addEventListener('click', ()=> openModal());
+    pinCancel.addEventListener('click', closeModal);
+
+    pinOK.addEventListener('click', ()=>{
+      const val = pinInput.value.trim();
+      if(!_pin){
+        if(val.length<3){ alert('PIN deve ter pelo menos 3 dígitos.'); return }
+        _pin = val; localStorage.setItem('im_pin', _pin);
+        alert('PIN definido com sucesso.');
+        closeModal();
+      }else{
+        if(val===_pin){ closeModal(); show(scrHistory) }
+        else alert('PIN incorreto.');
+      }
+      pinInput.value='';
+    });
+
+    // atalho: Enter confirma no modal
+    pinInput.addEventListener('keydown', e=>{ if(e.key==='Enter') pinOK.click() });
+
+    // Abrir Histórico pela tela 2 (respeitando PIN)
+    document.getElementById('btn-history').addEventListener('click', ()=>{
+      if(!_pin){ openModal(); }
+      else{ openModal(); } // solicitar sempre; remova esta linha se quiser abrir direto
+    });
+
+    /* ===== Service Worker =====
+       Desativado automaticamente no GitHub Pages (github.io) para evitar cache travado.
+    */
+    (location.hostname.endsWith('github.io'))
+      ? Promise.resolve()
+      : ('serviceWorker' in navigator) &&
+        navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  </script>
+</body>
+</html>
