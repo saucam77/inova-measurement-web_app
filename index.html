@@ -72,7 +72,7 @@
 
     .chart{width:100%; height:240px; background:linear-gradient(#fff,#fff),
            repeating-linear-gradient(to right, transparent 0 60px, rgba(2,6,23,.06) 60px 61px),
-           repeating-linear-linear-gradient(to bottom, transparent 0 60px, rgba(2,6,23,.06) 60px 61px);
+           repeating-linear-gradient(to bottom, transparent 0 60px, rgba(2,6,23,.06) 60px 61px);
            border-radius:12px; border:1px solid #e5e7eb; position:relative; overflow:hidden}
     svg{display:block}
 
@@ -92,15 +92,14 @@
     .modal .field{display:flex; flex-direction:column; gap:6px; margin:8px 0}
     footer{margin:18px 0 6px; text-align:center; color:#8fa0b6; font-size:13px}
 
-    /* Grid dos botões de ação abaixo da configuração */
+    /* ===== AÇÕES ABAIXO DA CONFIG ===== */
     .actions-grid{
       display:grid; gap:12px; grid-template-columns:repeat(3,1fr);
+      position:relative; z-index:0; /* garante clique nos botões */
     }
-    /* Conectar BT ocupa a soma de 2 botões (Iniciar + Limpar) */
-    #btn-bt{ grid-column: span 2; }
-    @media (max-width:640px){
-      #btn-bt{ grid-column: span 3; } /* no celular ocupa a linha toda */
-    }
+    /* “Conectar BT” ocupa a soma de Iniciar + Limpar (2 colunas) em qualquer tela */
+    #btn-bt{ grid-column: span 2; z-index:1; }
+
   </style>
 </head>
 <body>
@@ -113,7 +112,7 @@
         <div class="home-sub">Web</div>
         <div class="home-actions">
           <button class="btn btn-ghost" disabled>Cadastros (beta)</button>
-          <button class="btn btn-primary" id="go-measure">Medição</button>
+          <button type="button" class="btn btn-primary" id="go-measure">Medição</button>
         </div>
         <span class="version-tag">v1.0.0</span>
         <footer>Desenvolvido por INOVA Controle®</footer>
@@ -133,8 +132,8 @@
             <input id="value-input" class="input" placeholder="Digite o valor e pressione Enter" inputmode="decimal" autocomplete="off">
 
             <div class="measure-actions">
-              <button id="btn-save" class="btn btn-primary">Salvar</button>
-              <button id="btn-cancel" class="btn btn-danger">Anular</button>
+              <button type="button" id="btn-save" class="btn btn-primary">Salvar</button>
+              <button type="button" id="btn-cancel" class="btn btn-danger">Anular</button>
             </div>
 
             <div class="big-value" id="big-value">–</div>
@@ -201,14 +200,14 @@
           </div>
 
           <div class="row" style="margin-top:10px">
-            <button class="btn btn-primary" id="btn-start">Iniciar</button>
-            <button class="btn btn-ghost"   id="btn-clear">Limpar</button>
-            <button class="btn btn-ghost"   id="btn-history">Ver valores</button>
+            <button type="button" class="btn btn-primary" id="btn-start">Iniciar</button>
+            <button type="button" class="btn btn-ghost"   id="btn-clear">Limpar</button>
+            <button type="button" class="btn btn-ghost"   id="btn-history">Ver valores</button>
           </div>
 
           <!-- Linha seguinte: botão BT com largura da soma de Iniciar+Limpar -->
           <div class="actions-grid" style="margin-top:10px">
-            <button class="btn btn-ghost" id="btn-bt" title="Conexão Bluetooth">Conectar BT</button>
+            <button type="button" class="btn btn-ghost" id="btn-bt" title="Conexão Bluetooth">Conectar BT</button>
           </div>
 
           <div style="margin-top:10px">
@@ -237,9 +236,9 @@
       <div class="card">
         <h2 class="panel-title">Ações</h2>
         <div class="actions-row" style="margin-bottom:12px">
-          <button class="btn btn-warn"   id="btn-pin">Definir/Alterar PIN</button>
-          <button class="btn btn-primary" id="btn-export">Exportar CSV</button>
-          <button class="btn btn-danger"  id="btn-clear-history">Limpar histórico local</button>
+          <button type="button" class="btn btn-warn"   id="btn-pin">Definir/Alterar PIN</button>
+          <button type="button" class="btn btn-primary" id="btn-export">Exportar CSV</button>
+          <button type="button" class="btn btn-danger"  id="btn-clear-history">Limpar histórico local</button>
         </div>
 
         <div class="card" style="padding:0">
@@ -257,8 +256,8 @@
         </div>
 
         <div style="margin-top:12px">
-          <button class="btn btn-ghost" id="back-to-measure">Voltar à Medição</button>
-          <button class="btn btn-ghost" id="back-home">Voltar ao Início</button>
+          <button type="button" class="btn btn-ghost" id="back-to-measure">Voltar à Medição</button>
+          <button type="button" class="btn btn-ghost" id="back-home">Voltar ao Início</button>
         </div>
       </div>
     </section>
@@ -270,8 +269,8 @@
       <h3 id="modal-title">PIN</h3>
       <div id="modal-content" class="content"></div>
       <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:12px">
-        <button id="pin-cancel" class="btn btn-ghost">Cancelar</button>
-        <button id="pin-ok" class="btn btn-primary">OK</button>
+        <button type="button" id="pin-cancel" class="btn btn-ghost">Cancelar</button>
+        <button type="button" id="pin-ok" class="btn btn-primary">OK</button>
       </div>
     </div>
   </div>
@@ -279,7 +278,7 @@
   <script>
   window.addEventListener('DOMContentLoaded', () => {
 
-    /* ===== Navegação básica entre telas ===== */
+    /* ===== Navegação entre telas ===== */
     const screens = {
       home:    document.getElementById('screen-home'),
       measure: document.getElementById('screen-measure'),
@@ -307,19 +306,13 @@
       pinCancel: q('#pin-cancel'), pinOk: q('#pin-ok'), pinBtn: q('#btn-pin'),
     };
 
-    const LS_HISTORY = 'inova_history';
-    const LS_LISTS   = 'inova_lists';
-    const LS_PIN     = 'inova_pin';
+    const LS_PIN='inova_pin';
 
     let session = resetSession();
-    let history = loadHistory();
-    let lists   = loadLists();
-
-    renderLists();
 
     function resetSession(){
       return {
-        values: [], results: [], // valores e OK/NOK
+        values: [], results: [],
         nominal: null, tolPlus: null, tolMinus:null,
         limMax: null, limMin: null,
         piece:'', code:'', operator:'', shift:'',
@@ -337,6 +330,7 @@
       const d=new Date(); const p=n=>String(n).padStart(2,'0');
       return `SESS-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
     }
+    function toNum(v){ return parseFloat(String(v).replace(',','.')); }
 
     /* ====== Config & Limites ====== */
     function computeLimits(){
@@ -374,7 +368,6 @@
       session.sessionId = makeSessionId();
       session.started = true;
 
-      // mantém o foco imediatamente para digitação ou BT
       document.getElementById('measure-card').scrollIntoView({behavior:'smooth', block:'start'});
       setTimeout(()=>{ el.input.focus(); }, 100);
 
@@ -477,21 +470,21 @@
       });
       el.linePath.setAttribute('d', d || 'M10,200 L590,200');
 
-      // Pontos (APENAS O QUE FOI PEDIDO): quadrado (OK) e triângulo (NOK), maiores
+      // Pontos: quadrado (OK) e triângulo (NOK), maiores
       el.points.innerHTML='';
       pts.forEach((v,i)=>{
         const x = L + i*step, y = yMap(v);
         const isOk = (v>=session.limMin && v<=session.limMax);
 
         if(isOk){
-          const s=12; // tamanho quadrado OK
+          const s=12;
           const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
           rect.setAttribute('x', x - s/2); rect.setAttribute('y', y - s/2);
           rect.setAttribute('width', s); rect.setAttribute('height', s);
           rect.setAttribute('fill', '#2e7d32');
           el.points.appendChild(rect);
         }else{
-          const s=14; // tamanho triângulo NOK
+          const s=14;
           const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
           const p1 = `${x},${y - s/2}`;
           const p2 = `${x - s/2},${y + s/2}`;
@@ -534,7 +527,7 @@
     });
     el.clearHistory.addEventListener('click',()=>{ if(confirm('Limpar histórico local?')){ tbody.innerHTML=''; counter=1; } });
 
-    /* PIN (mantido conforme versão anterior) */
+    /* PIN */
     function openModal(title, contentHTML, onOk){
       el.modalTitle.textContent=title;
       el.modalContent.innerHTML=contentHTML;
@@ -562,10 +555,10 @@
         });
     });
 
-    /* Bluetooth: somente texto e id (sem mudanças de lógica aqui) */
+    /* Bluetooth – somente rótulo */
     el.bleBtn.textContent = 'Conectar BT';
 
-    /* Inicial */
+    /* Inicial: abrir diretamente a tela de medição (como estava) */
     show(screens.measure);
   });
   </script>
