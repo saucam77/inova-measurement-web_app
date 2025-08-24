@@ -51,6 +51,8 @@
 
     .input{width:100%; border:1px solid #e5e7eb; background:#fbfdff; border-radius:12px; padding:12px 14px; font-size:16px; outline:none; transition:.15s}
     .input:focus{border-color:var(--brand); box-shadow:0 0 0 4px var(--ring)}
+    .input-readonly{background:#eef2f6; color:#475569; border-color:#e2e8f0;} /* <<< cinza para campos calculados */
+
     .grid-form{display:grid; gap:12px; grid-template-columns:1fr}
     /* Portrait (mobile): empilhado (default) */
 
@@ -77,7 +79,7 @@
 
     .home-logo{display:block; margin:0 auto 12px; width:120px; opacity:.9}
     .home-title{text-align:center; font-size:clamp(26px,5vw,42px); font-weight:800; margin:12px 0}
-    .home-sub{text-align:center; color:#muted; margin-bottom:20px}
+    .home-sub{text-align:center; color:var(--muted); margin-bottom:20px}
     .home-actions{display:grid; gap:14px; max-width:420px; margin:0 auto}
 
     .measure-wrap{display:grid; gap:16px}
@@ -186,11 +188,11 @@
             </div>
             <div>
               <label class="muted">Limite superior</label>
-              <input id="f-max" class="input" disabled>
+              <input id="f-max" class="input input-readonly" disabled>
             </div>
             <div>
               <label class="muted">Limite inferior</label>
-              <input id="f-min" class="input" disabled>
+              <input id="f-min" class="input input-readonly" disabled>
             </div>
             <div class="field-piece">
               <label class="muted">Nome da peça <span class="kbd">*</span></label>
@@ -315,9 +317,18 @@
       modal: q('#modal'), modalTitle: q('#modal-title'), modalContent: q('#modal-content'),
       pinCancel: q('#pin-cancel'), pinOk: q('#pin-ok'), pinBtn: q('#btn-pin'),
       form: q('#measure-form'),
+      listPiece: q('#list-piece'), listCode: q('#list-code'),
+      listOp: q('#list-operator'), listShift: q('#list-shift'),
     };
 
     const LS_PIN='inova_pin';
+    const LS_LISTS={
+      piece:'inova_list_piece',
+      code:'inova_list_code',
+      op:'inova_list_operator',
+      shift:'inova_list_shift',
+      MAX:10
+    };
 
     let session = resetSession();
 
@@ -342,6 +353,37 @@
       return `SESS-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
     }
     function toNum(v){ return parseFloat(String(v).replace(',','.')); }
+
+    /* ===== Helpers: datalists no localStorage ===== */
+    function loadList(key){
+      try{ return JSON.parse(localStorage.getItem(key) || '[]'); }catch{return [];}
+    }
+    function saveList(key, arr){
+      localStorage.setItem(key, JSON.stringify(arr.slice(0, LS_LISTS.MAX)));
+    }
+    function addToList(key, value){
+      const v=(value||'').trim(); if(!v) return;
+      const list = loadList(key).filter(x=>x && String(x).trim()!=='');
+      // evita duplicados (case-insensitive)
+      const exists = list.findIndex(x=>String(x).toLowerCase()===v.toLowerCase());
+      if(exists>-1) list.splice(exists,1);
+      list.unshift(v);
+      saveList(key, list);
+    }
+    function renderDatalist(datalistEl, arr){
+      datalistEl.innerHTML='';
+      arr.forEach(item=>{
+        const opt=document.createElement('option');
+        opt.value=item;
+        datalistEl.appendChild(opt);
+      });
+    }
+    function refreshAllDatalists(){
+      renderDatalist(el.listPiece, loadList(LS_LISTS.piece));
+      renderDatalist(el.listCode,  loadList(LS_LISTS.code));
+      renderDatalist(el.listOp,    loadList(LS_LISTS.op));
+      renderDatalist(el.listShift, loadList(LS_LISTS.shift));
+    }
 
     /* ====== Config & Limites ====== */
     function computeLimits(){
@@ -379,6 +421,13 @@
       session.sessionId = makeSessionId();
       session.started = true;
 
+      /* >>> Atualiza datalists aprendidos ao iniciar a sessão <<< */
+      addToList(LS_LISTS.piece, session.piece);
+      addToList(LS_LISTS.code,  session.code);
+      if(session.operator) addToList(LS_LISTS.op, session.operator);
+      if(session.shift)    addToList(LS_LISTS.shift, session.shift);
+      refreshAllDatalists();
+
       document.getElementById('measure-card').scrollIntoView({behavior:'smooth', block:'start'});
       setTimeout(()=>{ el.input.focus(); }, 100);
 
@@ -386,12 +435,13 @@
     });
 
     el.clear.addEventListener('click', ()=>{
-      [el.nom,el.plus,el.minus,el.piece,el.code,el.op,el.shift,el.notes,el.input].forEach(i=>i.value='');
-      session = resetSession();
+      [el.nom,el.plus,el.minus,el.piece,el.code,el.op,el.shift,el.notes,el.input, el.max, el.min].forEach(i=>i.value=''); /* inclui limites */
+      session = resetSession(); /* zera limites e estado interno */
       clearChart();
       updateMini();
       el.big.textContent='–';
       el.status.className='status'; el.status.innerHTML='<span class="dot"></span><span class="muted">Aguardando início da medição</span>';
+      el.input.focus();
     });
 
     /* ====== Salvando medições ====== */
@@ -418,7 +468,7 @@
       el.input.value='';
       redrawChart();
       updateMini();
-      el.input.focus();
+      el.input.focus(); // mantém foco no campo de medição
     }
 
     el.save.addEventListener('click', ()=>saveValue());
@@ -461,13 +511,19 @@
     });
 
     el.cancel.addEventListener('click', ()=>{
-      if(!session.values.length) return;
+      if(!session.values.length){
+        // nada para anular, apenas garantir foco
+        el.input.focus();
+        return;
+      }
       const value = session.values.pop();
       session.results.pop();
       redrawChart();
       updateMini();
       el.status.className='status'; el.status.innerHTML='<span class="dot"></span><span class="muted">Última medição anulada</span>';
       pushHistoryRow(value,'ANULADO');
+      /* >>> Após Anular, retorna foco ao campo de medição <<< */
+      setTimeout(()=> el.input.focus(), 0);
     });
 
     /* ====== Mini-tabela (Tela 2) ====== */
@@ -601,6 +657,9 @@
           localStorage.setItem(LS_PIN,nw); el.modal.classList.remove('show'); alert('PIN atualizado!');
         });
     });
+
+    /* Carrega datalists ao iniciar */
+    refreshAllDatalists();
 
     /* Iniciar na Home */
     show(screens.home);
