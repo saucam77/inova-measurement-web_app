@@ -418,12 +418,23 @@
     }
 
     el.save.addEventListener('click', ()=>saveValue());
-    el.input.addEventListener('keydown', e=>{
-      if(e.key==='Enter'){
-        e.preventDefault(); // evita qualquer submit/mudança de foco
+
+    /* >>> AJUSTE 1: Enter robusto no campo de medição <<< */
+    function handleEnter(e){
+      const isEnter = e.key === 'Enter' || e.key === 'Return' || e.code === 'Enter' || e.keyCode === 13;
+      if(isEnter){
+        e.preventDefault();
+        e.stopPropagation();
         saveValue();
+        setTimeout(()=> el.input.focus(), 0); // garante foco no mobile
+        return false;
       }
+    }
+    ['keydown','keypress','keyup'].forEach(evt=>{
+      el.input.addEventListener(evt, handleEnter, true);
     });
+    document.addEventListener('submit', (e)=> e.preventDefault(), true);
+    /* >>> fim do ajuste 1 <<< */
 
     el.cancel.addEventListener('click', ()=>{
       if(!session.values.length) return;
@@ -567,8 +578,9 @@
         });
     });
 
-    /* Inicial: abrir diretamente a tela de medição (como estava) */
-    show(screens.measure);
+    /* >>> AJUSTE 2: iniciar na Home (Tela 1) <<< */
+    show(screens.home);
+    /* >>> fim do ajuste 2 <<< */
   });
   </script>
 </body>
