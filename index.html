@@ -1,438 +1,573 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>INOVA – Measurement (Web)</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>INOVA – Measurement (Web) v1.0.0</title>
 
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0B6DB7">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0B6DB7">
+  <link rel="icon" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="icon" sizes="512x512" href="./icons/icon-512.png">
 
-<style>
-  :root{
-    --brand:#0B6DB7;
-    --ok:#16a34a;
-    --nok:#dc2626;
-    --panel:#f5f7fb;
-    --muted:#6b7280;
-    --ring: rgba(11,109,183,.25);
-    --gap:12px;
-    --radius:14px;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-    color:#0f172a;background:#eef2f7;
-  }
-  .container{max-width:980px;margin:0 auto;padding:16px}
-  .card{
-    background:white;border-radius:var(--radius);
-    box-shadow:0 8px 20px rgba(15,23,42,.06),0 1px 2px rgba(15,23,42,.08);
-    border:1px solid #e5e7eb;
-  }
-  .section{padding:20px}
-  h1{font-size:clamp(22px,3.2vw,28px);margin:0 0 16px}
-  h2{font-size:clamp(18px,2.8vw,22px);margin:0 0 12px}
-  .muted{color:var(--muted)}
-  .hero{display:grid;place-items:center;text-align:center;padding:40px 20px}
-  .logo{
-    width:80px;height:80px;border-radius:18px;
-    display:grid;place-items:center;color:white;background:#0f172a;margin-bottom:10px
-  }
-  .btn{
-    appearance:none;border:0;cursor:pointer;
-    background:var(--brand);color:#fff;font-weight:700;
-    padding:12px 16px;border-radius:10px;
-    box-shadow:0 1px 0 rgba(0,0,0,.05), inset 0 -1px 0 rgba(255,255,255,.15);
-  }
-  .btn:focus{outline:3px solid var(--ring)}
-  .btn.muted{background:#94a3b8}
-  .btn.red{background:var(--nok)}
-  .btn.ghost{
-    background:#e6eef6;color:#0b4a80;font-weight:600;
-  }
-  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
-  .stack{display:grid;gap:var(--gap)}
-  .row{display:flex;gap:var(--gap);flex-wrap:wrap}
-  input,textarea{
-    width:100%;padding:12px 14px;border-radius:10px;border:1px solid #dbe3ee;background:#fff;
-    font:inherit;
-  }
-  input:focus,textarea:focus{outline:3px solid var(--ring)}
-  .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:#eef2f7;color:#0b4a80;font-weight:700}
-  .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
-  .dot.ok{background:var(--ok)} .dot.nok{background:var(--nok)}
-  .measure-panel{display:grid;gap:14px}
-  .big-reading{font-size:42px;font-weight:800;letter-spacing:.5px}
-  .footer-note{color:#64748b;font-size:12px}
-  .version{position:fixed;right:10px;bottom:10px;color:#64748b;font-size:12px}
-  /* Ações (Iniciar/Limpar/Ver valores + Conectar BT) */
-  .actions-grid{
-    display:grid;gap:var(--gap);
-    grid-template-columns:repeat(3,1fr);
-  }
-  /* Conectar BT ocupa a soma de 2 botões */
-  #btn-bt{grid-column:span 2}
-  /* Responsivo */
-  @media (max-width:640px){
-    .grid-2{grid-template-columns:1fr}
-  }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  /* Tabela compacta tela 2 */
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  thead th{background:#f3f6fb;color:#0b4a80;text-align:left;padding:10px}
-  tbody td{padding:10px;border-top:1px solid #e5e7eb}
-  .tag{padding:2px 8px;border-radius:999px;font-weight:700}
-  .tag.ok{background:#e7f7ec;color:#065f46}
-  .tag.nok{background:#fde8e8;color:#991b1b}
-  .tag.void{background:#f3f4f6;color:#374151}
-  .link{color:#0b4a80;text-decoration:none}
-</style>
+  <style>
+    :root{
+      --brand:#0B6DB7; --brand-700:#0a5fa1;
+      --ok:#2e7d32; --bad:#c62828;
+      --bg:#f2f6fb; --card:#ffffff; --text:#0f172a; --muted:#64748b;
+      --ring:rgba(11,109,183,.25); --radius:16px;
+      --line:#1f6fb9;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif; color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 50% -10%, #e8f1fb 0, transparent 60%),
+        linear-gradient(#fff,#f6f9ff 25%, #eef3fb 100%);
+    }
+    .container{max-width:1080px; margin:24px auto; padding:0 16px}
+    .screen{display:none} .screen.active{display:block}
+
+    .card{background:var(--card); border-radius:var(--radius);
+      box-shadow:0 6px 24px rgba(16,24,40,.06), inset 0 0 0 1px rgba(16,24,40,.05);
+      padding:18px; position:relative}
+    h1{font-size:clamp(22px,4vw,28px); margin:0 0 16px; font-weight:800; color:#0d2b4e}
+    h2{font-size:clamp(18px,3.2vw,22px); margin:8px 0 12px; font-weight:700; color:#123b64}
+    .muted{color:var(--muted)} .small{font-size:12px; color:#7c8aa0}
+    .version-tag{position:absolute; right:12px; bottom:8px; font-size:12px; color:#7c8aa0}
+
+    .btn{appearance:none; border:0; cursor:pointer; user-select:none; border-radius:12px;
+      padding:12px 16px; font-weight:700; font-size:16px; display:inline-flex; align-items:center; justify-content:center; transition:.2s; min-width:0}
+    .btn-primary{background:var(--brand); color:#fff}.btn-primary:hover{background:var(--brand-700)}
+    .btn-ghost{background:#e7eef7; color:#334155}.btn-ghost:hover{background:#d9e6f5}
+    .btn-danger{background:#f2c7c7; color:#7a1212}.btn-danger:hover{background:#efb9b9}
+    .btn-warn{background:#f7cf8a; color:#5c3b00}
+    .row{display:flex; gap:10px; flex-wrap:wrap}
+
+    .input{width:100%; border:1px solid #e5e7eb; background:#fbfdff; border-radius:12px; padding:12px 14px; font-size:16px; outline:none; transition:.15s}
+    .input:focus{border-color:var(--brand); box-shadow:0 0 0 4px var(--ring)}
+    .grid-form{display:grid; gap:12px; grid-template-columns:1fr 1fr}
+    @media (max-width:820px){.grid-form{grid-template-columns:1fr}}
+
+    .home-logo{display:block; margin:0 auto 12px; width:120px; opacity:.9}
+    .home-title{text-align:center; font-size:clamp(26px,5vw,42px); font-weight:800; margin:12px 0}
+    .home-sub{text-align:center; color:var(--muted); margin-bottom:20px}
+    .home-actions{display:grid; gap:14px; max-width:420px; margin:0 auto}
+
+    .measure-wrap{display:grid; gap:16px}
+    @media (min-width:980px){.measure-wrap{grid-template-columns:1fr 1fr}}
+    .panel-title{font-size:18px; font-weight:800; margin:0 0 10px}
+    .kbd{font-size:12px; padding:2px 8px; background:#eef2f6; border-radius:999px}
+    .measure-card{background:#f6f9fd; border-radius:14px; padding:16px; border:1px solid #e5edf8}
+    .big-value{font-size:clamp(34px,8vw,96px); font-weight:900; letter-spacing:1px}
+    .status{display:flex; align-items:center; gap:8px; font-weight:800; margin-top:8px}
+    .dot{width:10px; height:10px; border-radius:999px; background:#94a3b8}
+    .status.ok .dot{background:var(--ok)} .status.bad .dot{background:var(--bad)}
+    .measure-actions{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:10px 0 6px}
+
+    .chart{width:100%; height:240px; background:linear-gradient(#fff,#fff),
+           repeating-linear-gradient(to right, transparent 0 60px, rgba(2,6,23,.06) 60px 61px),
+           repeating-linear-linear-gradient(to bottom, transparent 0 60px, rgba(2,6,23,.06) 60px 61px);
+           border-radius:12px; border:1px solid #e5e7eb; position:relative; overflow:hidden}
+    svg{display:block}
+
+    .table{width:100%; border-collapse:separate; border-spacing:0; font-size:14px}
+    .table th,.table td{padding:10px 12px; border-bottom:1px solid #eef2f7; white-space:nowrap}
+    .table th{font-weight:800; color:#123b64; background:#f7fbff}
+    .table-compact{font-size:13px}
+    .table-compact th,.table-compact td{padding:8px 10px}
+
+    .actions-row{display:flex; flex-wrap:wrap; gap:10px}
+    @media (max-width:480px){.actions-row{flex-direction:column}}
+
+    .modal-overlay{position:fixed; inset:0; background:rgba(2,6,23,.45); display:none; align-items:center; justify-content:center; z-index:50}
+    .modal-overlay.show{display:flex}
+    .modal{width:min(92vw,420px); background:#fff; border-radius:16px; padding:18px; box-shadow:0 24px 60px rgba(15,23,42,.25)}
+    .modal h3{margin:0 0 8px; font-size:20px}
+    .modal .field{display:flex; flex-direction:column; gap:6px; margin:8px 0}
+    footer{margin:18px 0 6px; text-align:center; color:#8fa0b6; font-size:13px}
+
+    /* Grid dos botões de ação abaixo da configuração */
+    .actions-grid{
+      display:grid; gap:12px; grid-template-columns:repeat(3,1fr);
+    }
+    /* Conectar BT ocupa a soma de 2 botões (Iniciar + Limpar) */
+    #btn-bt{ grid-column: span 2; }
+    @media (max-width:640px){
+      #btn-bt{ grid-column: span 3; } /* no celular ocupa a linha toda */
+    }
+  </style>
 </head>
 <body>
-
-<main id="app" class="container">
-  <!-- ========== TELA 1 (HOME) ========== -->
-  <section id="screen-home" class="card hero">
-    <div class="logo">🗒️</div>
-    <h1>INOVA- Measurement</h1>
-    <p class="muted">Web</p>
-    <button class="btn" onclick="goTo('screen-measure')">Medição</button>
-    <p class="footer-note" style="margin-top:20px">Desenvolvido por INOVA Controle®</p>
-  </section>
-
-  <!-- ========== TELA 2 (MEDIÇÃO) ========== -->
-  <section id="screen-measure" class="stack" style="display:none;margin-top:12px">
-    <h1>Medição (Sessão atual)</h1>
-
-    <!-- Painel de medição -->
-    <div class="card section measure-panel" id="panel-measure">
-      <h2>Medição realizada</h2>
-      <input id="input-reading" type="text" inputmode="decimal" placeholder="Digite o valor e pressione Enter"/>
-      <div class="row">
-        <button class="btn" id="btn-save">Salvar</button>
-        <button class="btn red" id="btn-cancel">Anular</button>
+  <main class="container">
+    <!-- TELA 1 -->
+    <section id="screen-home" class="screen active">
+      <div class="card" style="text-align:center">
+        <img class="home-logo" alt="INOVA Controle" src="./icons/icon-192.png">
+        <h1 class="home-title">INOVA- Measurement</h1>
+        <div class="home-sub">Web</div>
+        <div class="home-actions">
+          <button class="btn btn-ghost" disabled>Cadastros (beta)</button>
+          <button class="btn btn-primary" id="go-measure">Medição</button>
+        </div>
+        <span class="version-tag">v1.0.0</span>
+        <footer>Desenvolvido por INOVA Controle®</footer>
       </div>
+    </section>
 
-      <div class="big-reading" id="last-reading">—</div>
-      <div class="pill" id="status-pill"><span class="dot" id="status-dot"></span><span id="status-text">Aguardando início da medição</span></div>
+    <!-- TELA 2 -->
+    <section id="screen-measure" class="screen">
+      <h1>Medição (Sessão atual)</h1>
+      <div class="measure-wrap">
+
+        <!-- Coluna esquerda: Medição + Gráfico -->
+        <div>
+          <div class="card measure-card" id="measure-card">
+            <h2 class="panel-title">Medição realizada</h2>
+
+            <input id="value-input" class="input" placeholder="Digite o valor e pressione Enter" inputmode="decimal" autocomplete="off">
+
+            <div class="measure-actions">
+              <button id="btn-save" class="btn btn-primary">Salvar</button>
+              <button id="btn-cancel" class="btn btn-danger">Anular</button>
+            </div>
+
+            <div class="big-value" id="big-value">–</div>
+            <div class="status" id="status"><span class="dot"></span><span class="muted">Aguardando início da medição</span></div>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <h2 class="panel-title">Gráfico de medições</h2>
+            <div class="chart">
+              <svg id="lineSvg" viewBox="0 0 600 240" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+                <line id="limitMin" x1="10" x2="590" y1="200" y2="200" stroke="#0f172a" stroke-width="4" opacity=".35"/>
+                <line id="limitMax" x1="10" x2="590" y1="40"  y2="40"  stroke="#0f172a" stroke-width="4" opacity=".35"/>
+                <path id="linePath" d="M10,200 L590,200" stroke="var(--line)" stroke-width="3" fill="none"></path>
+                <g id="points"></g>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coluna direita: Config + Resultados recentes -->
+        <div class="card">
+          <h2 class="panel-title">Configuração</h2>
+          <div class="grid-form">
+            <div>
+              <label class="muted">Dimensão nominal <span class="kbd">*</span></label>
+              <input id="f-nom" class="input" inputmode="decimal" autocomplete="off" required>
+            </div>
+            <div>
+              <label class="muted">Tolerância superior <span class="kbd">*</span></label>
+              <input id="f-tol-plus" class="input" inputmode="decimal" autocomplete="off" required>
+            </div>
+            <div>
+              <label class="muted">Tolerância inferior <span class="kbd">*</span></label>
+              <input id="f-tol-minus" class="input" inputmode="decimal" autocomplete="off" required>
+            </div>
+            <div>
+              <label class="muted">Limite superior</label>
+              <input id="f-max" class="input" disabled>
+            </div>
+            <div>
+              <label class="muted">Limite inferior</label>
+              <input id="f-min" class="input" disabled>
+            </div>
+            <div>
+              <label class="muted">Nome da peça <span class="kbd">*</span></label>
+              <input id="f-piece" class="input" list="list-piece" autocomplete="off" required>
+              <datalist id="list-piece"></datalist>
+            </div>
+            <div>
+              <label class="muted">Código <span class="kbd">*</span></label>
+              <input id="f-code" class="input" list="list-code" autocomplete="off" required>
+              <datalist id="list-code"></datalist>
+            </div>
+            <div>
+              <label class="muted">Operador (opcional)</label>
+              <input id="f-operator" class="input" list="list-operator" autocomplete="off">
+              <datalist id="list-operator"></datalist>
+            </div>
+            <div>
+              <label class="muted">Turno (opcional)</label>
+              <input id="f-shift" class="input" list="list-shift" placeholder="Ex.: 1, 2, 3" autocomplete="off">
+              <datalist id="list-shift"></datalist>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <button class="btn btn-primary" id="btn-start">Iniciar</button>
+            <button class="btn btn-ghost"   id="btn-clear">Limpar</button>
+            <button class="btn btn-ghost"   id="btn-history">Ver valores</button>
+          </div>
+
+          <!-- Linha seguinte: botão BT com largura da soma de Iniciar+Limpar -->
+          <div class="actions-grid" style="margin-top:10px">
+            <button class="btn btn-ghost" id="btn-bt" title="Conexão Bluetooth">Conectar BT</button>
+          </div>
+
+          <div style="margin-top:10px">
+            <label class="muted">Observações (opcional)</label>
+            <textarea id="f-notes" class="input" rows="4" style="resize:vertical"></textarea>
+          </div>
+
+          <div class="card" style="margin-top:12px; padding:12px">
+            <h2 class="panel-title" style="margin-bottom:6px">Resultados recentes</h2>
+            <div style="overflow:auto">
+              <table class="table table-compact" id="mini-table">
+                <thead>
+                  <tr><th>Nº</th><th>Hora</th><th>Valor</th><th>Resultado</th></tr>
+                </thead>
+                <tbody id="mini-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TELA 3 -->
+    <section id="screen-history" class="screen">
+      <h1>Histórico Global & Exportação</h1>
+      <div class="card">
+        <h2 class="panel-title">Ações</h2>
+        <div class="actions-row" style="margin-bottom:12px">
+          <button class="btn btn-warn"   id="btn-pin">Definir/Alterar PIN</button>
+          <button class="btn btn-primary" id="btn-export">Exportar CSV</button>
+          <button class="btn btn-danger"  id="btn-clear-history">Limpar histórico local</button>
+        </div>
+
+        <div class="card" style="padding:0">
+          <div style="overflow:auto">
+            <table class="table" id="history-table">
+              <thead>
+              <tr>
+                <th>Nº Global</th><th>Data</th><th>Sessão_ID</th><th>Peça</th><th>Código</th>
+                <th>Operador</th><th>Turno</th><th>Nominal</th><th>Tol. +</th><th>Tol. −</th><th>Valor</th><th>Resultado</th>
+              </tr>
+              </thead>
+              <tbody id="history-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <button class="btn btn-ghost" id="back-to-measure">Voltar à Medição</button>
+          <button class="btn btn-ghost" id="back-home">Voltar ao Início</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL PIN -->
+  <div id="modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <h3 id="modal-title">PIN</h3>
+      <div id="modal-content" class="content"></div>
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:12px">
+        <button id="pin-cancel" class="btn btn-ghost">Cancelar</button>
+        <button id="pin-ok" class="btn btn-primary">OK</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Gráfico -->
-    <div class="card section">
-      <h2>Gráfico de medições</h2>
-      <div id="chart-wrap" style="width:100%;height:260px">
-        <svg id="chart" viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet"></svg>
-      </div>
-    </div>
+  <script>
+  window.addEventListener('DOMContentLoaded', () => {
 
-    <!-- Configuração -->
-    <div class="card section">
-      <h2>Configuração</h2>
-      <div class="grid-2">
-        <div class="stack">
-          <label>Dimensão nominal <span class="muted">*</span></label>
-          <input id="nominal" type="text" placeholder="Ex.: 28"/>
-        </div>
-        <div class="stack">
-          <label>Tolerância superior <span class="muted">*</span></label>
-          <input id="tolPlus" type="text" placeholder="Ex.: +0,200"/>
-        </div>
-        <div class="stack">
-          <label>Tolerância inferior <span class="muted">*</span></label>
-          <input id="tolMinus" type="text" placeholder="Ex.: -0,200"/>
-        </div>
-        <div class="stack">
-          <label>Limite superior</label>
-          <input id="limitHigh" type="text" disabled/>
-        </div>
-        <div class="stack">
-          <label>Limite inferior</label>
-          <input id="limitLow" type="text" disabled/>
-        </div>
-        <div class="stack">
-          <label>Nome da peça <span class="muted">*</span></label>
-          <input id="partName" type="text" placeholder="Ex.: BUCHA"/>
-        </div>
-        <div class="stack">
-          <label>Código <span class="muted">*</span></label>
-          <input id="partCode" type="text" placeholder="Ex.: 1452-25"/>
-        </div>
-        <div class="stack">
-          <label>Operador (opcional)</label>
-          <input id="operator" type="text" placeholder="Ex.: Saulo"/>
-        </div>
-        <div class="stack">
-          <label>Turno (opcional)</label>
-          <input id="shift" type="text" placeholder="Ex.: 1, 2, 3"/>
-        </div>
-      </div>
+    /* ===== Navegação básica entre telas ===== */
+    const screens = {
+      home:    document.getElementById('screen-home'),
+      measure: document.getElementById('screen-measure'),
+      history: document.getElementById('screen-history'),
+    };
+    const show = (el) => { Object.values(screens).forEach(s => s.classList.remove('active')); el.classList.add('active'); };
+    document.getElementById('go-measure').addEventListener('click', () => show(screens.measure));
+    document.getElementById('back-to-measure').addEventListener('click', () => show(screens.measure));
+    document.getElementById('back-home').addEventListener('click', () => show(screens.home));
 
-      <div class="stack" style="margin-top:14px">
-        <div class="actions-grid">
-          <button class="btn" id="btn-start">Iniciar</button>
-          <button class="btn muted" id="btn-clear">Limpar</button>
-          <button class="btn ghost" id="btn-history">Ver valores</button>
-          <!-- Conectar BT ocupa a soma das 2 primeiras colunas -->
-          <button class="btn ghost" id="btn-bt" title="Conexão Bluetooth">Conectar BT</button>
-        </div>
-        <div class="stack">
-          <label>Observações (opcional)</label>
-          <textarea id="notes" rows="3" placeholder="Anote aqui informações relevantes desta sessão"></textarea>
-        </div>
-      </div>
-    </div>
+    /* ====== Estado ====== */
+    const el = {
+      nom: q('#f-nom'), plus: q('#f-tol-plus'), minus: q('#f-tol-minus'),
+      max: q('#f-max'), min: q('#f-min'),
+      piece: q('#f-piece'), code: q('#f-code'), op: q('#f-operator'), shift: q('#f-shift'),
+      notes: q('#f-notes'),
+      input: q('#value-input'), save: q('#btn-save'), cancel: q('#btn-cancel'),
+      big: q('#big-value'), status: q('#status'), start: q('#btn-start'), clear: q('#btn-clear'),
+      miniBody: q('#mini-body'),
+      historyBody: q('#history-body'), export: q('#btn-export'), clearHistory: q('#btn-clear-history'),
+      btnHistory: q('#btn-history'),
+      limitMin: q('#limitMin'), limitMax: q('#limitMax'), linePath: q('#linePath'), points: q('#points'),
+      svg: q('#lineSvg'), bleBtn: q('#btn-bt'),
+      modal: q('#modal'), modalTitle: q('#modal-title'), modalContent: q('#modal-content'),
+      pinCancel: q('#pin-cancel'), pinOk: q('#pin-ok'), pinBtn: q('#btn-pin'),
+    };
 
-    <!-- Tabela compacta (sempre visível) -->
-    <div class="card section">
-      <h2>Valores desta sessão</h2>
-      <div id="session-table"></div>
-    </div>
+    const LS_HISTORY = 'inova_history';
+    const LS_LISTS   = 'inova_lists';
+    const LS_PIN     = 'inova_pin';
 
-    <p class="footer-note" style="text-align:center">Desenvolvido por INOVA Controle®</p>
-  </section>
+    let session = resetSession();
+    let history = loadHistory();
+    let lists   = loadLists();
 
-  <!-- ========== TELA 3 (HISTÓRICO) ========== -->
-  <section id="screen-history" class="stack" style="display:none;margin-top:12px">
-    <h1>Histórico Global & Exportação</h1>
-    <div class="card section stack">
-      <div class="row">
-        <button class="btn muted" id="btn-pin">Definir/Alterar PIN</button>
-        <button class="btn ghost" id="btn-export">Exportar CSV</button>
-        <button class="btn red" id="btn-clear-all">Limpar histórico local</button>
-      </div>
-      <div id="global-table" style="margin-top:10px"></div>
-      <div class="row">
-        <button class="btn muted" onclick="goTo('screen-measure')">Voltar à Medição</button>
-      </div>
-    </div>
-    <p class="footer-note" style="text-align:center">Desenvolvido por INOVA Controle®</p>
-  </section>
-</main>
+    renderLists();
 
-<!-- Versão -->
-<div class="version">v1.0.0</div>
-
-<script>
-/* ======= util ======= */
-const $ = sel => document.querySelector(sel);
-const fmt = n => (Number(n).toLocaleString('pt-BR',{minimumFractionDigits:4, maximumFractionDigits:4}));
-const toNum = (s)=> Number(String(s).replace('.','').replace(',','.'));
-const ok = (v, lo, hi)=> v>=lo && v<=hi;
-
-/* ======= navegação ======= */
-function goTo(id){
-  ['screen-home','screen-measure','screen-history'].forEach(s=>{
-    document.getElementById(s).style.display = (s===id)?'block':'none';
-  });
-  if(id==='screen-measure'){
-    // foca input ao entrar
-    setTimeout(()=> {
-      $('#panel-measure').scrollIntoView({behavior:'smooth',block:'start'});
-      $('#input-reading').focus();
-    }, 120);
-  }
-}
-
-/* ======= estado ======= */
-let session = {
-  nominal:null, plus:null, minus:null, hi:null, lo:null,
-  partName:'', partCode:'', operator:'', shift:'', notes:'',
-  values:[]  // {v, ts, ok, tag?}
-};
-let globalData = []; // mock, mantemos API local
-
-/* ======= UI: limites automáticos ======= */
-function recalcLimits(){
-  const nominal = toNum($('#nominal').value);
-  const plus    = toNum($('#tolPlus').value);
-  const minus   = toNum($('#tolMinus').value);
-  if(!isNaN(nominal) && !isNaN(plus) && !isNaN(minus)){
-    const hi = nominal + plus;
-    const lo = nominal + minus;
-    $('#limitHigh').value = fmt(hi);
-    $('#limitLow').value  = fmt(lo);
-    session.nominal = nominal; session.plus=plus; session.minus=minus; session.hi=hi; session.lo=lo;
-    drawChart();
-  }
-}
-['#nominal','#tolPlus','#tolMinus'].forEach(sel=>{
-  $(sel).addEventListener('input', recalcLimits);
-});
-
-/* ======= UI: status ======= */
-function setStatus(state, txt){
-  const dot = $('#status-dot'); const pill = $('#status-pill'); const t = $('#status-text');
-  t.textContent = txt;
-  if(state==='ok'){ dot.className='dot ok'; }
-  else if(state==='nok'){ dot.className='dot nok'; }
-  else { dot.className='dot'; }
-}
-
-/* ======= gráfico SVG ======= */
-function drawChart(){
-  const svg = $('#chart');
-  const w=1000, h=300, pad=30;
-  svg.innerHTML='';
-  // eixo / linhas de limite
-  const vals = session.values.map(x=>x.v);
-  const haveLimits = (typeof session.hi==='number' && typeof session.lo==='number' && !isNaN(session.hi)&&!isNaN(session.lo));
-  const minV = Math.min(...vals, haveLimits?session.lo:Infinity);
-  const maxV = Math.max(...vals, haveLimits?session.hi:-Infinity);
-  if(!isFinite(minV) || !isFinite(maxV)){ return; }
-
-  const range = Math.max( (maxV-minV) || 1, 0.0001);
-  const x = i => pad + (i*(w-2*pad))/Math.max(vals.length-1,1);
-  const y = v => h - pad - ((v-minV)*(h-2*pad)/range);
-
-  // grades/limites
-  if(haveLimits){
-    const yHi = y(session.hi), yLo = y(session.lo);
-    svg.insertAdjacentHTML('beforeend', `<line x1="${pad}" y1="${yHi}" x2="${w-pad}" y2="${yHi}" stroke="#9ca3af" stroke-width="4" opacity=".65"/>`);
-    svg.insertAdjacentHTML('beforeend', `<line x1="${pad}" y1="${yLo}" x2="${w-pad}" y2="${yLo}" stroke="#9ca3af" stroke-width="4" opacity=".65"/>`);
-  }
-
-  // linha
-  let d='';
-  session.values.forEach((pt,i)=>{
-    d += (i? ' L':'M')+x(i)+','+y(pt.v);
-  });
-  if(session.values.length){
-    svg.insertAdjacentHTML('beforeend', `<path d="${d}" fill="none" stroke="#1e3a8a" stroke-width="3"/>`);
-  }
-
-  // marcadores (quadrado OK, triângulo NOK)
-  session.values.forEach((pt,i)=>{
-    const cx = x(i), cy = y(pt.v);
-    if(pt.ok){
-      const s=10; // quadrado
-      svg.insertAdjacentHTML('beforeend', `<rect x="${cx - s/2}" y="${cy - s/2}" width="${s}" height="${s}" fill="#16a34a" />`);
-    }else{
-      const s=12; // triângulo
-      const p1=`${cx},${cy - s/2}`;
-      const p2=`${cx - s/2},${cy + s/2}`;
-      const p3=`${cx + s/2},${cy + s/2}`;
-      svg.insertAdjacentHTML('beforeend', `<polygon points="${p1} ${p2} ${p3}" fill="#dc2626"/>`);
+    function resetSession(){
+      return {
+        values: [], results: [], // valores e OK/NOK
+        nominal: null, tolPlus: null, tolMinus:null,
+        limMax: null, limMin: null,
+        piece:'', code:'', operator:'', shift:'',
+        sessionId: null, started:false
+      };
     }
+
+    function q(s){ return document.querySelector(s); }
+    function nowStr(){
+      const d=new Date();
+      const p=n=>String(n).padStart(2,'0');
+      return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+    }
+    function makeSessionId(){
+      const d=new Date(); const p=n=>String(n).padStart(2,'0');
+      return `SESS-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
+    }
+
+    /* ====== Config & Limites ====== */
+    function computeLimits(){
+      const nominal = toNum(el.nom.value);
+      const plus    = toNum(el.plus.value);
+      const minus   = toNum(el.minus.value);
+      if([nominal,plus,minus].some(x=>Number.isNaN(x))) return;
+      const limMax = +(nominal + plus).toFixed(4);
+      const limMin = +(nominal + minus).toFixed(4);
+      el.max.value = limMax.toFixed(4);
+      el.min.value = limMin.toFixed(4);
+      session.nominal = nominal; session.tolPlus = plus; session.tolMinus = minus;
+      session.limMax = limMax; session.limMin = limMin;
+      redrawChart();
+    }
+    [el.nom,el.plus,el.minus].forEach(i=>i.addEventListener('input',computeLimits));
+
+    function configValid(){
+      const required = [el.nom, el.plus, el.minus, el.piece, el.code];
+      let ok=true;
+      required.forEach(i=>{
+        const empty = !i.value || i.value.toString().trim()==='';
+        i.style.borderColor = empty ? '#ef4444' : '#e5e7eb';
+        ok = ok && !empty;
+      });
+      if(!ok) alert('Preencha os campos obrigatórios: Dimensão nominal, Tol. superior, Tol. inferior, Peça e Código.');
+      return ok;
+    }
+
+    el.start.addEventListener('click', ()=>{
+      if(!configValid()) return;
+      computeLimits();
+      session.piece=el.piece.value.trim(); session.code=el.code.value.trim();
+      session.operator=el.op.value.trim(); session.shift=el.shift.value.trim();
+      session.sessionId = makeSessionId();
+      session.started = true;
+
+      // mantém o foco imediatamente para digitação ou BT
+      document.getElementById('measure-card').scrollIntoView({behavior:'smooth', block:'start'});
+      setTimeout(()=>{ el.input.focus(); }, 100);
+
+      el.status.className='status'; el.status.innerHTML='<span class="dot"></span><span class="muted">Sessão iniciada</span>';
+    });
+
+    el.clear.addEventListener('click', ()=>{
+      [el.nom,el.plus,el.minus,el.piece,el.code,el.op,el.shift,el.notes,el.input].forEach(i=>i.value='');
+      session = resetSession();
+      clearChart();
+      updateMini();
+      el.big.textContent='–';
+      el.status.className='status'; el.status.innerHTML='<span class="dot"></span><span class="muted">Aguardando início da medição</span>';
+    });
+
+    /* ====== Salvando medições ====== */
+    function saveValue(fromStr){
+      if(!session.started || !configValid()){ alert('Inicie a sessão e preencha os campos obrigatórios.'); return; }
+      const txt = (fromStr ?? el.input.value).toString().trim().replace(',','.');
+      if(!txt) return;
+      const value = parseFloat(txt);
+      if(Number.isNaN(value)) return;
+
+      if((value > session.limMax + 1) || (value < session.limMin - 1)){
+        const ok = confirm(`Valor ${value.toLocaleString('pt-BR')} está muito fora dos limites (${session.limMin} a ${session.limMax}).\nDeseja registrar assim mesmo?`);
+        if(!ok) return;
+      }
+
+      const result = (value >= session.limMin && value <= session.limMax) ? 'OK' : 'NOK';
+      session.values.push(value);
+      session.results.push(result);
+      el.big.textContent = value.toLocaleString('pt-BR',{minimumFractionDigits:4});
+      el.status.className = 'status ' + (result==='OK'?'ok':'bad');
+      el.status.innerHTML = `<span class="dot"></span> <span>${result==='OK'?'APROVADO':'REPROVADO'}</span>`;
+
+      pushHistoryRow(value, result);
+      el.input.value='';
+      redrawChart();
+      updateMini();
+      el.input.focus();
+    }
+
+    el.save.addEventListener('click', ()=>saveValue());
+    el.input.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); saveValue(); } });
+
+    el.cancel.addEventListener('click', ()=>{
+      if(!session.values.length) return;
+      const value = session.values.pop();
+      session.results.pop();
+      redrawChart();
+      updateMini();
+      el.status.className='status'; el.status.innerHTML='<span class="dot"></span><span class="muted">Última medição anulada</span>';
+      pushHistoryRow(value,'ANULADO');
+    });
+
+    /* ====== Mini-tabela (Tela 2) ====== */
+    function updateMini(){
+      el.miniBody.innerHTML='';
+      session.values.forEach((v,idx)=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${idx+1}</td><td>${nowStr().split(' ')[1]}</td><td>${(+v).toFixed(4)}</td><td>${session.results[idx]}</td>`;
+        el.miniBody.appendChild(tr);
+      });
+    }
+
+    /* ====== Gráfico (SVG) ====== */
+    function clearChart(){
+      el.linePath.setAttribute('d','M10,200 L590,200');
+      el.points.innerHTML='';
+      el.limitMin.setAttribute('y1',200); el.limitMin.setAttribute('y2',200);
+      el.limitMax.setAttribute('y1',40);  el.limitMax.setAttribute('y2',40);
+    }
+
+    function redrawChart(){
+      const W=600, H=240, L=10, R=590;
+      if(session.limMin==null || session.limMax==null){ clearChart(); return; }
+
+      const pts=session.values.slice();
+      const minV = Math.min(session.limMin, ...pts);
+      const maxV = Math.max(session.limMax, ...pts);
+      const span = (maxV - minV) || 1;
+      const yMap = v => {
+        const t=(v - minV)/span;
+        const y = H - 20 - t*(H-40);
+        return Math.max(20, Math.min(H-20, y));
+      };
+      const step = pts.length>1 ? (R-L)/(pts.length-1) : 0;
+
+      // Limites
+      el.limitMin.setAttribute('y1', yMap(session.limMin));
+      el.limitMin.setAttribute('y2', yMap(session.limMin));
+      el.limitMax.setAttribute('y1', yMap(session.limMax));
+      el.limitMax.setAttribute('y2', yMap(session.limMax));
+
+      // Linha
+      let d='';
+      pts.forEach((v,i)=>{
+        const x = L + i*step, y = yMap(v);
+        d += (i? ' L':'M')+x+','+y;
+      });
+      el.linePath.setAttribute('d', d || 'M10,200 L590,200');
+
+      // Pontos (APENAS O QUE FOI PEDIDO): quadrado (OK) e triângulo (NOK), maiores
+      el.points.innerHTML='';
+      pts.forEach((v,i)=>{
+        const x = L + i*step, y = yMap(v);
+        const isOk = (v>=session.limMin && v<=session.limMax);
+
+        if(isOk){
+          const s=12; // tamanho quadrado OK
+          const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
+          rect.setAttribute('x', x - s/2); rect.setAttribute('y', y - s/2);
+          rect.setAttribute('width', s); rect.setAttribute('height', s);
+          rect.setAttribute('fill', '#2e7d32');
+          el.points.appendChild(rect);
+        }else{
+          const s=14; // tamanho triângulo NOK
+          const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+          const p1 = `${x},${y - s/2}`;
+          const p2 = `${x - s/2},${y + s/2}`;
+          const p3 = `${x + s/2},${y + s/2}`;
+          poly.setAttribute('points', `${p1} ${p2} ${p3}`);
+          poly.setAttribute('fill', '#c62828');
+          el.points.appendChild(poly);
+        }
+      });
+    }
+
+    /* ====== Histórico Global ====== */
+    const tbody=el.historyBody; let counter=1;
+    function pushHistoryRow(v, result){
+      const when=new Date();
+      const num=String(counter).padStart(6,'0');
+      const sess=session.sessionId ?? makeSessionId();
+
+      const tr=document.createElement('tr');
+      const fullRow=[
+        num,
+        when.toISOString().slice(0,19).replace('T',' '),
+        sess,
+        el.piece.value||'-', el.code.value||'-',
+        el.op.value||'-', el.shift.value||'-',
+        (session.nominal??0).toFixed(4), (session.tolPlus??0).toFixed(4), (session.tolMinus??0).toFixed(4),
+        (+v).toFixed(4), result
+      ];
+      tr.innerHTML=fullRow.map(c=>`<td>${c}</td>`).join('');
+      tbody.prepend(tr);
+      counter++;
+    }
+
+    el.export.addEventListener('click',()=>{
+      const rows=[[ 'Nº Global','Data','Sessão_ID','Peça','Código','Operador','Turno','Nominal','Tol.+','Tol.-','Valor','Resultado' ]];
+      [...tbody.children].reverse().forEach(tr=>rows.push([...tr.children].map(td=>td.textContent)));
+      const csv=rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(';')).join('\r\n');
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob); a.download='inova_measurements.csv'; a.click(); URL.revokeObjectURL(a.href);
+    });
+    el.clearHistory.addEventListener('click',()=>{ if(confirm('Limpar histórico local?')){ tbody.innerHTML=''; counter=1; } });
+
+    /* PIN (mantido conforme versão anterior) */
+    function openModal(title, contentHTML, onOk){
+      el.modalTitle.textContent=title;
+      el.modalContent.innerHTML=contentHTML;
+      el.modal.classList.add('show');
+      el.pinCancel.onclick = ()=> el.modal.classList.remove('show');
+      el.pinOk.onclick = ()=> onOk?.();
+    }
+    el.btnHistory.addEventListener('click', ()=>{
+      const pin = localStorage.getItem(LS_PIN);
+      const go = ()=>{ show(screens.history); };
+      if(!pin){ go(); return; }
+      openModal('Digite o PIN', `<div class="field"><label class="muted">PIN</label><input id="pin-in" class="input" inputmode="numeric"></div>`,
+        ()=>{ const v=q('#pin-in').value||''; if(v===pin){ el.modal.classList.remove('show'); go(); } else alert('PIN incorreto.'); });
+    });
+    el.pinBtn.addEventListener('click', ()=>{
+      const cur = localStorage.getItem(LS_PIN)||'';
+      openModal('Definir/Alterar PIN',
+        `${cur?'<div class="field"><label class="muted">PIN atual</label><input id="pin-old" class="input" inputmode="numeric"></div>':''}
+         <div class="field"><label class="muted">Novo PIN</label><input id="pin-new" class="input" inputmode="numeric"></div>`,
+        ()=>{
+          const old=q('#pin-old')?.value??''; const nw=q('#pin-new')?.value??'';
+          if(!nw){ alert('Informe o novo PIN.'); return; }
+          if(cur && cur!==old){ alert('PIN atual incorreto.'); return; }
+          localStorage.setItem(LS_PIN,nw); el.modal.classList.remove('show'); alert('PIN atualizado!');
+        });
+    });
+
+    /* Bluetooth: somente texto e id (sem mudanças de lógica aqui) */
+    el.bleBtn.textContent = 'Conectar BT';
+
+    /* Inicial */
+    show(screens.measure);
   });
-}
-
-/* ======= tabela sessão ======= */
-function renderSessionTable(){
-  const rows = session.values.map((r,i)=>`
-    <tr>
-      <td>${String(i+1).padStart(6,'0')}</td>
-      <td>${new Date(r.ts).toLocaleString('pt-BR')}</td>
-      <td>${fmt(r.v)}</td>
-      <td>${r.ok?'<span class="tag ok">OK</span>':'<span class="tag nok">NOK</span>'}</td>
-    </tr>
-  `).join('');
-  $('#session-table').innerHTML = `
-    <div class="card section" style="padding:0">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:100px">Nº</th>
-            <th>Data</th>
-            <th style="width:140px">Valor</th>
-            <th style="width:110px">Resultado</th>
-          </tr>
-        </thead>
-        <tbody>${rows || '<tr><td colspan="4" class="muted" style="padding:14px">Sem valores nesta sessão.</td></tr>'}</tbody>
-      </table>
-    </div>`;
-}
-
-/* ======= captura / salvar ======= */
-function trySave(val){
-  if(!session.nominal || session.plus===null || session.minus===null || !session.partName || !session.partCode){
-    alert('Preencha os campos obrigatórios: Dimensão nominal, Tolerâncias, Peça e Código.');
-    return;
-  }
-  const v = Number(val);
-  if(Number.isNaN(v)) return;
-  const inside = ok(v, session.lo, session.hi);
-  // checagem “muito fora” (±1 do limite)
-  if(!inside && (v > session.hi + 1 || v < session.lo - 1)){
-    const msg = `Valor ${v} está muito fora dos limites (${fmt(session.lo)} a ${fmt(session.hi)}).\nDeseja registrar assim mesmo?`;
-    if(!confirm(msg)) return;
-  }
-  session.values.push({v, ts:Date.now(), ok:inside});
-  $('#last-reading').textContent = fmt(v);
-  setStatus(inside?'ok':'nok', inside?'APROVADO':'REPROVADO');
-  drawChart();
-  renderSessionTable();
-  $('#input-reading').value='';
-  $('#input-reading').focus();
-}
-
-/* ======= eventos ======= */
-$('#btn-save').addEventListener('click', ()=> {
-  trySave( toNum($('#input-reading').value) );
-});
-$('#input-reading').addEventListener('keydown', (e)=>{
-  if(e.key==='Enter') trySave( toNum(e.currentTarget.value) );
-});
-$('#btn-cancel').addEventListener('click', ()=>{
-  if(!session.values.length) return;
-  const last = session.values.pop();
-  // Mantém como “anulado” no global (se desejar), aqui removemos só do gráfico da sessão:
-  setStatus('','Aguardando início da medição');
-  $('#last-reading').textContent = '—';
-  drawChart(); renderSessionTable();
-});
-
-$('#btn-start').addEventListener('click', ()=>{
-  // trava obrigatórios
-  session.partName = $('#partName').value.trim();
-  session.partCode = $('#partCode').value.trim();
-  recalcLimits();
-  // foco/scroll para o painel de medição
-  setTimeout(()=>{
-    $('#panel-measure').scrollIntoView({behavior:'smooth', block:'start'});
-    $('#input-reading').focus();
-  }, 100);
-});
-
-$('#btn-clear').addEventListener('click', ()=>{
-  // limpa toda a sessão
-  session.values = [];
-  $('#input-reading').value='';
-  $('#last-reading').textContent='—';
-  setStatus('','Aguardando início da medição');
-  drawChart(); renderSessionTable();
-});
-
-$('#btn-history').addEventListener('click', ()=> goTo('screen-history'));
-
-/* Bluetooth (placeholder) */
-$('#btn-bt').addEventListener('click', ()=>{
-  alert('Conexão BT: em breve integração com Bluetooth Web.\n(placeholder)');
-});
-
-/* Histórico (mock básico) */
-$('#btn-export').addEventListener('click', ()=>{
-  const rows = session.values.map((r,i)=>[i+1,new Date(r.ts).toISOString(), r.v, r.ok?'OK':'NOK'].join(';'));
-  const csv = ['N;Data;Valor;Resultado',...rows].join('\n');
-  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='inova-measurement.csv'; a.click();
-});
-$('#btn-pin').addEventListener('click', ()=>{
-  const current = localStorage.getItem('pin') || '';
-  const input = prompt(current ? 'Digite o novo PIN (atual: oculto)':'Defina um PIN:');
-  if(input!==null){ localStorage.setItem('pin', input.trim()); alert('PIN atualizado.'); }
-});
-$('#btn-clear-all').addEventListener('click', ()=>{
-  if(confirm('Tem certeza que deseja limpar o histórico local desta sessão?')){
-    session.values=[]; drawChart(); renderSessionTable();
-  }
-});
-
-/* inicialização */
-goTo('screen-measure');         // abre direto a tela 2 durante desenvolvimento
-setStatus('','Aguardando início da medição');
-renderSessionTable();
-</script>
+  </script>
 </body>
 </html>
