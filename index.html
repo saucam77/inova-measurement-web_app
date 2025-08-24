@@ -170,6 +170,24 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 });
 </script>
+  <script>
+window.addEventListener('DOMContentLoaded', () => {
+  const screens = {
+    home:    document.getElementById('screen-home'),
+    measure: document.getElementById('screen-measure'),
+    history: document.getElementById('screen-history'),
+  };
+  const show = (el) => {
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+  };
+
+  document.getElementById('go-measure')?.addEventListener('click', () => show(screens.measure));
+  document.getElementById('back-to-measure')?.addEventListener('click', () => show(screens.measure));
+  document.getElementById('btn-history')?.addEventListener('click', () => show(screens.history));
+});
+</script>
+
 </body>
 </html>
 
