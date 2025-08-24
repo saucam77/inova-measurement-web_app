@@ -1,8 +1,8 @@
 {
   "name": "INOVA Measurement",
   "short_name": "IMeasure",
-  "id": "/?app=v1.0.0",
-  "start_url": "./index.html?cb=v1.0.0",
+  "id": "/?app=v1.0.1",
+  "start_url": "./index.html?cb=v1.0.1",
   "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
