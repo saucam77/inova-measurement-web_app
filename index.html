@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>INOVA – Measurement (Web) v24</title>
+  <title>INOVA – Measurement (Web) v1.0.0</title>
 
   <!-- PWA -->
   <link rel="manifest" href="./manifest.webmanifest">
@@ -100,7 +100,7 @@
           <button class="btn btn-ghost" disabled>Cadastros (beta)</button>
           <button class="btn btn-primary" id="go-measure">Medição</button>
         </div>
-        <span class="version-tag">v24</span>
+        <span class="version-tag">v1.0.0</span>
         <footer>Desenvolvido por INOVA Controle®</footer>
       </div>
     </section>
@@ -251,7 +251,7 @@
     </section>
   </main>
 
-  <!-- LIMPEZA DE PWA ANTIGA (v13 etc.) -->
+  <!-- LIMPEZA DE PWA ANTIGA -->
   <script>
     (function cleanupOldPWA(){
       try{
@@ -261,7 +261,7 @@
         if (window.caches && caches.keys) {
           caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
         }
-      }catch(e){/* silencioso */}
+      }catch(e){}
     })();
   </script>
 
@@ -276,7 +276,12 @@
     }
     $('go-measure').addEventListener('click',()=>show(scrMeasure));
     $('back-to-measure').addEventListener('click',()=>show(scrMeasure));
-    $('btn-history').addEventListener('click',()=> checkHistoryAccess());
+
+    /* “Ver valores” → histórico (com PIN se existir) */
+    $('btn-history').addEventListener('click',()=>{
+      if(!_pin){ show(scrHistory); return; }
+      pinState='enter'; openModal(/*afterAccess*/()=>show(scrHistory));
+    });
 
     /* Campos & helpers */
     const fNom=$('f-nom'), fPlus=$('f-tol-plus'), fMinus=$('f-tol-minus'), fMax=$('f-max'), fMin=$('f-min');
@@ -345,7 +350,7 @@
     inputVal.addEventListener('keydown',e=>{ if(e.key==='Enter') saveValue() });
     $('btn-save').addEventListener('click',saveValue);
 
-    // ANULAR: marca última medição como ANULADO (telas 2 e 3) e remove último ponto do gráfico
+    // ANULAR: marca última medição como ANULADO e remove último ponto do gráfico
     $('btn-cancel').addEventListener('click',()=>{
       const row = Array.from(document.getElementById('history-body').children)
         .find(tr => tr.lastElementChild.textContent.trim().toUpperCase()!=='ANULADO');
@@ -374,8 +379,11 @@
       [fPiece,fCode,fOperator,fShift].forEach(i=>i.value='');
       $('f-notes').value='';
       inputVal.value=''; big.textContent='–'; setStatus(null);
-      redrawChart(true); // limpa gráfico
-      miniBody.innerHTML=''; // limpa mini-histórico
+
+      /* >>> correção: zera de verdade o gráfico e o mini-histórico */
+      points.length = 0;                // esvazia o array interno
+      redrawChart(true);                 // limpa traço/linhas
+      miniBody.innerHTML='';             // limpa mini-histórico
     });
 
     $('btn-history').textContent='Ver valores';
@@ -451,7 +459,7 @@
       ];
       tr.innerHTML=fullRow.map(c=>`<td>${c}</td>`).join(''); tbody.prepend(tr);
 
-      // Mini-histórico (compacto) — mantém só os últimos 20
+      // Mini-histórico (compacto)
       const trMini=document.createElement('tr');
       const hhmmss = when.toTimeString().slice(0,8);
       trMini.innerHTML = [
@@ -475,11 +483,11 @@
     });
     $('btn-clear-history').addEventListener('click',()=>{ if(confirm('Limpar histórico local?')){ tbody.innerHTML=''; counter=1; miniBody.innerHTML=''; } });
 
-    /* PIN com alteração */
+    /* PIN com alteração + “abrir histórico após acesso” */
     const modal=$('modal'), modalContent=$('modal-content'), pinOK=$('pin-ok'), pinCancel=$('pin-cancel');
-    let _pin=localStorage.getItem('im_pin')||''; let pinState='enter'; let _tempNewPin='';
-    function openModal(){ modal.classList.add('show'); renderPinModal(); }
-    function closeModal(){ modal.classList.remove('show') }
+    let _pin=localStorage.getItem('im_pin')||''; let pinState='enter'; let _tempNewPin=''; let afterAccessCb=null;
+    function openModal(cb){ afterAccessCb = typeof cb==='function' ? cb : null; _pin ? (pinState='enter') : (pinState='set'); modal.classList.add('show'); renderPinModal(); }
+    function closeModal(){ modal.classList.remove('show'); }
     function renderPinModal(){
       if(!_pin){ pinState='set'; modalContent.innerHTML=`
         <div class="field"><label class="muted">Defina um PIN (mín. 3 dígitos)</label>
@@ -499,24 +507,29 @@
         <input id="pin-field" class="input" maxlength="6" inputmode="numeric" placeholder="•••"></div>`;
         $('modal-title').textContent='Alterar PIN — Confirmar'; setTimeout(()=>$('pin-field').focus(),30); }
     }
-    function checkHistoryAccess(){ _pin ? (pinState='enter') : (pinState='set'); openModal(); }
-    $('btn-pin').addEventListener('click',()=>{ _pin ? (pinState='enter') : (pinState='set'); openModal(); });
+    $('btn-pin').addEventListener('click',()=>openModal());
     pinCancel.addEventListener('click',closeModal);
     pinOK.addEventListener('click',()=>{
       const field=document.getElementById('pin-field'); const val=field?field.value.trim():'';
       if(pinState==='set'){ if(val.length<3){alert('PIN deve ter pelo menos 3 dígitos.'); return}
-        _pin=val; localStorage.setItem('im_pin',_pin); alert('PIN definido com sucesso.'); closeModal(); return; }
-      if(pinState==='enter'){ if(val===_pin){ const wantsChange=confirm('PIN correto. Deseja ALTERAR o PIN? (OK = alterar | Cancelar = só acessar)');
-          if(wantsChange){ pinState='change_new'; renderPinModal(); } else { closeModal(); show(scrHistory); } }
-        else alert('PIN incorreto.'); return; }
+        _pin=val; localStorage.setItem('im_pin',_pin); alert('PIN definido com sucesso.');
+        closeModal(); if(afterAccessCb) afterAccessCb(); return; }
+      if(pinState==='enter'){ if(val===_pin){
+          const wantsChange=confirm('PIN correto. Deseja ALTERAR o PIN? (OK = alterar | Cancelar = só acessar)');
+          if(wantsChange){ pinState='change_new'; renderPinModal(); }
+          else { closeModal(); if(afterAccessCb) afterAccessCb(); }
+        } else alert('PIN incorreto.');
+        return;
+      }
       if(pinState==='change_new'){ if(val.length<3){alert('O novo PIN deve ter pelo menos 3 dígitos.'); return}
         _tempNewPin=val; pinState='change_confirm'; renderPinModal(); return; }
       if(pinState==='change_confirm'){ if(val!==_tempNewPin){ alert('A confirmação não confere.'); return }
-        _pin=_tempNewPin; localStorage.setItem('im_pin',_pin); alert('PIN alterado com sucesso.'); _tempNewPin=''; pinState='enter'; closeModal(); return; }
+        _pin=_tempNewPin; localStorage.setItem('im_pin',_pin); alert('PIN alterado com sucesso.');
+        _tempNewPin=''; pinState='enter'; closeModal(); if(afterAccessCb) afterAccessCb(); return; }
     });
     document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&modal.classList.contains('show')) pinOK.click(); });
 
-    /* Web Bluetooth — salva apenas quando recebe CR/TAB/LF */
+    /* Web Bluetooth — captura termina quando chega CR/LF/TAB */
     const bleBtn=$('btn-ble'); let bleDevice=null, bleServer=null; let bleBuffer='';
     if(!('bluetooth' in navigator)){ bleBtn.disabled=true; $('ble-hint').textContent='Navegador sem suporte a Web Bluetooth.'; }
     bleBtn?.addEventListener('click', async ()=>{
@@ -549,5 +562,17 @@
     (location.hostname.endsWith('github.io')) ? Promise.resolve() :
       ('serviceWorker' in navigator) && navigator.serviceWorker.register('./sw.js').catch(()=>{});
   </script>
+
+  <!-- Modal genérico para PIN -->
+  <div id="modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <h3 id="modal-title">PIN</h3>
+      <div id="modal-content" class="content"></div>
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:12px">
+        <button id="pin-cancel" class="btn btn-ghost">Cancelar</button>
+        <button id="pin-ok" class="btn btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
