@@ -77,7 +77,7 @@
 
     .home-logo{display:block; margin:0 auto 12px; width:120px; opacity:.9}
     .home-title{text-align:center; font-size:clamp(26px,5vw,42px); font-weight:800; margin:12px 0}
-    .home-sub{text-align:center; color:var(--muted); margin-bottom:20px}
+    .home-sub{text-align:center; color:#muted; margin-bottom:20px}
     .home-actions{display:grid; gap:14px; max-width:420px; margin:0 auto}
 
     .measure-wrap{display:grid; gap:16px}
@@ -141,12 +141,15 @@
           <div class="card measure-card" id="measure-card">
             <h2 class="panel-title">Medição realizada</h2>
 
-            <input id="value-input" class="input" placeholder="Digite o valor e pressione Enter" inputmode="decimal" autocomplete="off">
-
-            <div class="measure-actions">
-              <button type="button" id="btn-save" class="btn btn-primary">Salvar</button>
-              <button type="button" id="btn-cancel" class="btn btn-danger">Anular</button>
-            </div>
+            <!-- FORM dedicado para capturar ação do IME (Enter/Done) no Android -->
+            <form id="measure-form" autocomplete="off">
+              <input id="value-input" class="input" placeholder="Digite o valor e pressione Enter"
+                     inputmode="decimal" enterkeyhint="done" autocomplete="off">
+              <div class="measure-actions">
+                <button type="button" id="btn-save" class="btn btn-primary">Salvar</button>
+                <button type="button" id="btn-cancel" class="btn btn-danger">Anular</button>
+              </div>
+            </form>
 
             <div class="big-value" id="big-value">–</div>
             <div class="status" id="status"><span class="dot"></span><span class="muted">Aguardando início da medição</span></div>
@@ -311,6 +314,7 @@
       svg: q('#lineSvg'),
       modal: q('#modal'), modalTitle: q('#modal-title'), modalContent: q('#modal-content'),
       pinCancel: q('#pin-cancel'), pinOk: q('#pin-ok'), pinBtn: q('#btn-pin'),
+      form: q('#measure-form'),
     };
 
     const LS_PIN='inova_pin';
@@ -414,27 +418,47 @@
       el.input.value='';
       redrawChart();
       updateMini();
-      el.input.focus(); // mantém foco no campo de medição
+      el.input.focus();
     }
 
     el.save.addEventListener('click', ()=>saveValue());
 
-    /* >>> AJUSTE 1: Enter robusto no campo de medição <<< */
+    /* Enter robusto — 3 camadas:
+       1) key events (quando disponíveis)
+       2) submit do form (IME action "Done/Enter")
+       3) fallback por \n injetado no valor */
     function handleEnter(e){
       const isEnter = e.key === 'Enter' || e.key === 'Return' || e.code === 'Enter' || e.keyCode === 13;
       if(isEnter){
         e.preventDefault();
         e.stopPropagation();
         saveValue();
-        setTimeout(()=> el.input.focus(), 0); // garante foco no mobile
+        setTimeout(()=> el.input.focus(), 0);
         return false;
       }
     }
     ['keydown','keypress','keyup'].forEach(evt=>{
       el.input.addEventListener(evt, handleEnter, true);
     });
-    document.addEventListener('submit', (e)=> e.preventDefault(), true);
-    /* >>> fim do ajuste 1 <<< */
+
+    // 2) Captura ação do IME via submit do form
+    el.form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      saveValue();
+      setTimeout(()=> el.input.focus(), 0);
+      return false;
+    });
+
+    // 3) Fallback: teclado que injeta \n no valor
+    el.input.addEventListener('input', (e)=>{
+      const v = e.target.value;
+      if(v && /\n/.test(v)){
+        e.target.value = v.replace(/\n/g,'');
+        saveValue();
+        setTimeout(()=> el.input.focus(), 0);
+      }
+    });
 
     el.cancel.addEventListener('click', ()=>{
       if(!session.values.length) return;
@@ -578,9 +602,8 @@
         });
     });
 
-    /* >>> AJUSTE 2: iniciar na Home (Tela 1) <<< */
+    /* Iniciar na Home */
     show(screens.home);
-    /* >>> fim do ajuste 2 <<< */
   });
   </script>
 </body>
