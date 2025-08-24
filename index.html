@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>INOVA – Measurement (Web) v21</title>
+  <title>INOVA – Measurement (Web) v22</title>
 
   <!-- PWA -->
   <link rel="manifest" href="./manifest.webmanifest">
@@ -100,7 +100,7 @@
           <button class="btn btn-ghost" disabled>Cadastros (beta)</button>
           <button class="btn btn-primary" id="go-measure">Medição</button>
         </div>
-        <span class="version-tag">v21</span>
+        <span class="version-tag">v22</span>
         <footer>Desenvolvido por INOVA Controle®</footer>
       </div>
     </section>
@@ -145,15 +145,15 @@
           <div class="grid-form">
             <div>
               <label class="muted">Dimensão nominal <span class="kbd">*</span></label>
-              <input id="f-nom" class="input" inputmode="decimal" autocomplete="off">
+              <input id="f-nom" class="input" inputmode="decimal" autocomplete="off" required>
             </div>
             <div>
               <label class="muted">Tolerância superior <span class="kbd">*</span></label>
-              <input id="f-tol-plus" class="input" inputmode="decimal" autocomplete="off">
+              <input id="f-tol-plus" class="input" inputmode="decimal" autocomplete="off" required>
             </div>
             <div>
               <label class="muted">Tolerância inferior <span class="kbd">*</span></label>
-              <input id="f-tol-minus" class="input" inputmode="decimal" autocomplete="off">
+              <input id="f-tol-minus" class="input" inputmode="decimal" autocomplete="off" required>
             </div>
             <div>
               <label class="muted">Limite superior</label>
@@ -165,12 +165,12 @@
             </div>
             <div>
               <label class="muted">Nome da peça <span class="kbd">*</span></label>
-              <input id="f-piece" class="input" list="list-piece" autocomplete="off">
+              <input id="f-piece" class="input" list="list-piece" autocomplete="off" required>
               <datalist id="list-piece"></datalist>
             </div>
             <div>
               <label class="muted">Código <span class="kbd">*</span></label>
-              <input id="f-code" class="input" list="list-code" autocomplete="off">
+              <input id="f-code" class="input" list="list-code" autocomplete="off" required>
               <datalist id="list-code"></datalist>
             </div>
             <div>
@@ -203,7 +203,7 @@
             <textarea id="f-notes" class="input" rows="4" style="resize:vertical"></textarea>
           </div>
 
-          <!-- NOVO: Mini-histórico compacto na própria tela -->
+          <!-- Mini-histórico -->
           <div class="card" style="margin-top:12px; padding:12px">
             <h2 class="panel-title" style="margin-bottom:6px">Resultados recentes</h2>
             <div style="overflow:auto">
@@ -282,7 +282,9 @@
     const inputVal=$('value-input'), big=$('big-value'), statusEl=$('status');
 
     const dlPiece=$('list-piece'), dlCode=$('list-code'), dlOperator=$('list-operator'), dlShift=$('list-shift');
-    const toNum=(v)=>Number(String(v).replace(',','.'));
+
+    // >>> FIX: agora string vazia vira NaN (antes virava 0 e passava na validação)
+    const toNum=(v)=>{ const s=String(v??'').trim().replace(',','.'); return s==='' ? NaN : Number(s); };
     const fmt=(v)=> (Number(String(v).replace(',','.'))||0).toLocaleString('pt-BR',{minimumFractionDigits:4,maximumFractionDigits:4});
 
     function loadList(k){ try{const a=JSON.parse(localStorage.getItem(k)||'[]'); return Array.isArray(a)?a:[]}catch{return []} }
@@ -498,7 +500,7 @@
     });
     document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&modal.classList.contains('show')) pinOK.click(); });
 
-    /* Web Bluetooth — salva só quando recebe CR/TAB/LF/LF */
+    /* Web Bluetooth — salva apenas quando recebe CR/TAB/LF */
     const bleBtn=$('btn-ble'); let bleDevice=null, bleServer=null; let bleBuffer='';
     if(!('bluetooth' in navigator)){ bleBtn.disabled=true; $('ble-hint').textContent='Navegador sem suporte a Web Bluetooth.'; }
     bleBtn?.addEventListener('click', async ()=>{
